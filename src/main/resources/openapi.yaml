@@ -1,0 +1,304 @@
+openapi: 3.0.3
+info:
+  title: Current Account - Cuentas API
+  version: 1.0.0
+  description: |
+    BIAN-like current account capability.
+    UUID is used as primary key. Each account references a client UUID.
+servers:
+  - url: /api/v1
+
+tags:
+  - name: Cuentas
+
+paths:
+  /cuentas:
+    get:
+      tags: [Cuentas]
+      summary: List accounts
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - name: clienteId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: estado
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Account list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cuenta'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [Cuentas]
+      summary: Create account
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CuentaCreateRequest'
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cuenta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /cuentas/{cuentaId}:
+    get:
+      tags: [Cuentas]
+      summary: Get account by id
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CuentaId'
+      responses:
+        '200':
+          description: Account found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cuenta'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Cuentas]
+      summary: Replace account
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CuentaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CuentaUpdateRequest'
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cuenta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Cuentas]
+      summary: Patch account
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CuentaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CuentaPatchRequest'
+      responses:
+        '200':
+          description: Account patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cuenta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Cuentas]
+      summary: Delete account (logical)
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CuentaId'
+      responses:
+        '204':
+          description: Account deactivated
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    XGuid:
+      name: x-guid
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+    XApp:
+      name: x-app
+      in: header
+      required: true
+      schema:
+        type: string
+        maxLength: 50
+    CuentaId:
+      name: cuentaId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModel'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModel'
+    ConflictError:
+      description: Business conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModel'
+    InternalError:
+      description: Internal error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModel'
+
+  schemas:
+    Cuenta:
+      type: object
+      required: [cuentaId, clienteId, numeroCuenta, tipoCuenta, saldoInicial, estado]
+      properties:
+        cuentaId:
+          type: string
+          format: uuid
+        clienteId:
+          type: string
+          format: uuid
+        numeroCuenta:
+          type: string
+          maxLength: 40
+        tipoCuenta:
+          type: string
+          enum: [AHORRO, CORRIENTE]
+        saldoInicial:
+          type: number
+          format: double
+          minimum: 0
+        estado:
+          type: boolean
+
+    CuentaCreateRequest:
+      type: object
+      required: [clienteId, numeroCuenta, tipoCuenta, saldoInicial, estado]
+      properties:
+        clienteId:
+          type: string
+          format: uuid
+        numeroCuenta:
+          type: string
+          maxLength: 40
+        tipoCuenta:
+          type: string
+          enum: [AHORRO, CORRIENTE]
+        saldoInicial:
+          type: number
+          format: double
+          minimum: 0
+        estado:
+          type: boolean
+
+    CuentaUpdateRequest:
+      type: object
+      required: [tipoCuenta, estado]
+      properties:
+        tipoCuenta:
+          type: string
+          enum: [AHORRO, CORRIENTE]
+        estado:
+          type: boolean
+
+    CuentaPatchRequest:
+      type: object
+      properties:
+        tipoCuenta:
+          type: string
+          enum: [AHORRO, CORRIENTE]
+        estado:
+          type: boolean
+
+    ErrorModel:
+      type: object
+      required: [title, detail, instance, type]
+      properties:
+        title:
+          type: string
+          maxLength: 50
+          example: Bad Request
+        detail:
+          type: string
+          maxLength: 120
+          example: Validation error in request payload
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorList'
+        instance:
+          type: string
+          maxLength: 50
+          example: '0188'
+        type:
+          type: string
+          maxLength: 100
+          example: /current-account/v1/cuentas
+        resource:
+          type: string
+          example: CuentaController/createAccount
+        component:
+          type: string
+          example: TX-ACC-001
+        backend:
+          type: string
+          example: '00045'
+
+    ErrorList:
+      type: object
+      properties:
+        code:
+          type: string
+          example: 'ACC-001'
+        message:
+          type: string
+          example: Technical validation error
+        businessMessage:
+          type: string
+          example: Numero de cuenta ya existe
