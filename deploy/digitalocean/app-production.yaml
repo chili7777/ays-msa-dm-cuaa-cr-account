@@ -1,0 +1,26 @@
+name: ays-msa-dm-cuaa-cr-account-production
+region: nyc
+services:
+  - name: api
+    image:
+      registry_type: GHCR
+      registry: ghcr.io
+      repository: CHANGE_ME_GHCR_OWNER/ays-msa-dm-cuaa-cr-account
+      tag: production-latest
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    health_check:
+      http_path: /health-check
+      initial_delay_seconds: 10
+      period_seconds: 15
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+    envs:
+      - key: AYS_MSA_CR_ACCOUNT_PROFILE
+        value: production
+        type: GENERAL
+      - key: AYS_MSA_CR_ACCOUNT_PORT
+        value: "8080"
+        type: GENERAL
