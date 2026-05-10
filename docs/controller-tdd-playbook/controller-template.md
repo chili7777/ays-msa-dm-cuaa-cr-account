@@ -8,8 +8,14 @@ Use this template for new endpoints.
 class <ControllerName>Test extends RequestTestCase {
 
     @Test
-    void should<ExpectedBehavior>() throws Exception {
-        assertResponse("<endpoint>", <statusCode>, "<expectedJson>");
+    void given_<precondition>_when_<action>_then_<expectedResult>() throws Exception {
+        String requestBody = """
+                {
+                  "field": "value"
+                }
+                """;
+
+        assertRequestWithBody("POST", "<endpoint>", requestBody, <statusCode>);
     }
 }
 ```
@@ -47,3 +53,5 @@ test(<scope>): add failing <endpoint> contract test
 feat(<scope>): implement <endpoint> endpoint
 refactor(<scope>): improve <endpoint> implementation
 ```
+
+The first commit in the sequence must be created right after confirming the test fails.

@@ -17,6 +17,11 @@ Keep each endpoint implementation predictable, test-driven, and traceable throug
    - headers if needed
 3. Run only the new test and confirm it fails.
 
+Important:
+- The first commit in the TDD flow is created in this RED phase.
+- This commit must include only the failing acceptance test and required test helpers.
+- Do not add controller implementation in this first commit.
+
 Suggested commit type:
 
 ```text

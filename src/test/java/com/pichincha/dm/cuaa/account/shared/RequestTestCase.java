@@ -73,6 +73,22 @@ public abstract class RequestTestCase {
                 .isEqualTo(expectedStatusCode);
     }
 
+    protected void assertRequestWithBody(String method,
+                                         String endpoint,
+                                         String body,
+                                         Integer expectedStatusCode,
+                                         HttpHeaders headers) throws Exception {
+
+        webTestClient.method(HttpMethod.valueOf(method))
+                .uri(endpoint)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(body), String.class)
+                .exchange()
+                .expectStatus()
+                .isEqualTo(expectedStatusCode);
+    }
+
     protected void assertRequest(String method,
                                  String endpoint,
                                  Integer expectedStatusCode) throws Exception {
