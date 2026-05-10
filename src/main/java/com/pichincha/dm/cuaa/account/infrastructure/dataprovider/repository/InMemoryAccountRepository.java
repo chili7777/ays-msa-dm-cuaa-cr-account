@@ -2,6 +2,8 @@ package com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository;
 
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import com.pichincha.dm.cuaa.account.domain.usecases.ports.output.CreateAccountOutputPort;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.AccountEntity;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.mapper.AccountRepositoryMapper;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +16,19 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public final class InMemoryAccountRepository implements CreateAccountOutputPort {
 
-    private final Map<String, Account> accounts = new HashMap<>();
+    private final AccountRepositoryMapper accountRepositoryMapper;
+    private final Map<String, AccountEntity> accounts = new HashMap<>();
 
     @Override
     public Mono<Void> save(Account account) {
-        accounts.put(account.accountNumber(), account);
-        return Mono.empty();
+        return Mono.fromRunnable(() -> {
+            AccountEntity accountEntity = accountRepositoryMapper.toAccountEntity(account);
+            accounts.put(account.accountNumber(), accountEntity);
+        });
     }
 
     public Mono<Account> findByAccountNumber(String accountNumber) {
-        return Mono.justOrEmpty(accounts.get(accountNumber));
+        return Mono.justOrEmpty(accounts.get(accountNumber))
+                .map(accountRepositoryMapper::toAccount);
     }
 }

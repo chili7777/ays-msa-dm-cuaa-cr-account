@@ -22,11 +22,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'io.swagger.core.v3:swagger-annotations-jakarta:2.2.31'
 	implementation 'jakarta.validation:jakarta.validation-api:3.1.1'
+	implementation 'org.mapstruct:mapstruct:1.6.3'
 	compileOnly 'org.projectlombok:lombok:1.18.38'
 	annotationProcessor 'org.projectlombok:lombok:1.18.38'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testCompileOnly 'org.projectlombok:lombok:1.18.38'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
+	testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

@@ -2,6 +2,7 @@ package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller;
 
 import com.pichincha.dm.cuaa.account.domain.usecases.ports.input.CreateAccountInputPort;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountCreateRequestDto;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.AccountHttpRequestMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ public class AccountsController implements AccountsApi {
 
 	private static final ResponseEntity<Void> CREATED_RESPONSE = ResponseEntity.status(HttpStatus.CREATED).build();
 	private final CreateAccountInputPort createAccountUseCase;
+	private final AccountHttpRequestMapper accountHttpRequestMapper;
 
 	@Override
 	public Mono<ResponseEntity<Void>> createAccount(UUID xGuid,
@@ -23,14 +25,9 @@ public class AccountsController implements AccountsApi {
 											  Mono<AccountCreateRequestDto> accountCreateRequestDto,
 											  ServerWebExchange exchange) {
 		return accountCreateRequestDto
-				.flatMap(request -> createAccountUseCase
-						.createAccount(
-								request.getClientId(),
-								request.getAccountNumber(),
-								request.getAccountType().getValue(),
-								request.getInitialBalance(),
-								request.getStatus())
-						.thenReturn(CREATED_RESPONSE));
+				.map(accountHttpRequestMapper::toAccount)
+				.flatMap(createAccountUseCase::createAccount)
+				.thenReturn(CREATED_RESPONSE);
 	}
 
 }

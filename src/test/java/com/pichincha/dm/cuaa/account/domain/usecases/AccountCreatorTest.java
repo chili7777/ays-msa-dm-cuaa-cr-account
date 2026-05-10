@@ -35,7 +35,7 @@ final class AccountCreatorTest {
 
         when(accountPersistence.save(account)).thenReturn(Mono.empty());
 
-        accountCreator.createAccount(clientId, accountNumber, accountType, initialBalance, status).block();
+        accountCreator.createAccount(account).block();
 
         verify(accountPersistence, atLeastOnce()).save(account);
     }
