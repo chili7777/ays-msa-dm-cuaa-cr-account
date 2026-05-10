@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public class HealthCheckGetController {
 
     private static final String STATUS_KEY = "status";
-    private static final String STATUS_OK = "ok ✅";
+    private static final String STATUS_OK = "ok";
     private static final Map<String, String> HEALTH_RESPONSE = Map.of(STATUS_KEY, STATUS_OK);
 
     @GetMapping("/health-check")
