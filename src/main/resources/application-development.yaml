@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: ays-msa-dm-cuaa-cr-account-development
+
+server:
+  port: 8080
+
+# Development environment configuration
+app:
+  environment: development
+  log-level: DEBUG

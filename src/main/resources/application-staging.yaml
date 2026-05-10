@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: ays-msa-dm-cuaa-cr-account-staging
+
+server:
+  port: 8080
+
+# Staging environment configuration
+app:
+  environment: staging
+  log-level: INFO
