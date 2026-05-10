@@ -5,8 +5,12 @@ import com.pichincha.dm.cuaa.account.domain.usecases.ports.output.CreateAccountO
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+@Repository
+@Profile("test")
 @RequiredArgsConstructor
 public final class InMemoryAccountRepository implements CreateAccountOutputPort {
 
