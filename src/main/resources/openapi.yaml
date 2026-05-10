@@ -1,30 +1,29 @@
-openapi: 3.0.3
+﻿openapi: 3.0.3
 info:
-  title: Current Account - Cuentas API
+  title: Current Account - Accounts API
   version: 1.0.0
   description: |
     BIAN-like current account capability.
     UUID is used as primary key. Each account references a client UUID.
 servers:
   - url: /api/v1
-
 tags:
-  - name: Cuentas
-
+  - name: Accounts
 paths:
-  /cuentas:
+  /accounts:
     get:
-      tags: [Cuentas]
+      operationId: listAccounts
+      tags: [Accounts]
       summary: List accounts
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
-        - name: clienteId
+        - name: clientId
           in: query
           schema:
             type: string
             format: uuid
-        - name: estado
+        - name: status
           in: query
           schema:
             type: boolean
@@ -36,11 +35,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CuentaDto'
+                  $ref: '#/components/schemas/AccountDto'
         '500':
           $ref: '#/components/responses/InternalError'
     post:
-      tags: [Cuentas]
+      operationId: createAccount
+      tags: [Accounts]
       summary: Create account
       parameters:
         - $ref: '#/components/parameters/XGuid'
@@ -50,99 +50,97 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CuentaCreateRequestDto'
+              $ref: '#/components/schemas/AccountCreateRequestDto'
       responses:
         '201':
           description: Account created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CuentaDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '409':
           $ref: '#/components/responses/ConflictError'
         '500':
           $ref: '#/components/responses/InternalError'
-
-  /cuentas/{cuentaId}:
+  /accounts/{accountId}:
     get:
-      tags: [Cuentas]
+      operationId: getAccountById
+      tags: [Accounts]
       summary: Get account by id
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
-        - $ref: '#/components/parameters/CuentaId'
+        - $ref: '#/components/parameters/AccountId'
       responses:
         '200':
           description: Account found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CuentaDto'
+                $ref: '#/components/schemas/AccountDto'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [Cuentas]
+      operationId: replaceAccount
+      tags: [Accounts]
       summary: Replace account
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
-        - $ref: '#/components/parameters/CuentaId'
+        - $ref: '#/components/parameters/AccountId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CuentaUpdateRequestDto'
+              $ref: '#/components/schemas/AccountUpdateRequestDto'
       responses:
         '200':
           description: Account updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CuentaDto'
+                $ref: '#/components/schemas/AccountDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
     patch:
-      tags: [Cuentas]
+      operationId: patchAccount
+      tags: [Accounts]
       summary: Patch account
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
-        - $ref: '#/components/parameters/CuentaId'
+        - $ref: '#/components/parameters/AccountId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CuentaPatchRequestDto'
+              $ref: '#/components/schemas/AccountPatchRequestDto'
       responses:
         '200':
           description: Account patched
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CuentaDto'
+                $ref: '#/components/schemas/AccountDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [Cuentas]
+      operationId: deleteAccount
+      tags: [Accounts]
       summary: Delete account (logical)
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
-        - $ref: '#/components/parameters/CuentaId'
+        - $ref: '#/components/parameters/AccountId'
       responses:
         '204':
           description: Account deactivated
         '404':
           $ref: '#/components/responses/NotFound'
-
 components:
   parameters:
     XGuid:
@@ -159,14 +157,13 @@ components:
       schema:
         type: string
         maxLength: 50
-    CuentaId:
-      name: cuentaId
+    AccountId:
+      name: accountId
       in: path
       required: true
       schema:
         type: string
         format: uuid
-
   responses:
     BadRequest:
       description: Invalid request
@@ -192,70 +189,65 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorModelDto'
-
   schemas:
-    CuentaDto:
+    AccountDto:
       type: object
-      required: [cuentaId, clienteId, numeroCuenta, tipoCuenta, saldoInicial, estado]
+      required: [accountId, clientId, accountNumber, accountType, initialBalance, status]
       properties:
-        cuentaId:
+        accountId:
           type: string
           format: uuid
-        clienteId:
+        clientId:
           type: string
           format: uuid
-        numeroCuenta:
+        accountNumber:
           type: string
           maxLength: 40
-        tipoCuenta:
+        accountType:
           type: string
-          enum: [AHORRO, CORRIENTE]
-        saldoInicial:
+          enum: [SAVINGS, CURRENT]
+        initialBalance:
           type: number
           format: double
           minimum: 0
-        estado:
+        status:
           type: boolean
-
-    CuentaCreateRequestDto:
+    AccountCreateRequestDto:
       type: object
-      required: [clienteId, numeroCuenta, tipoCuenta, saldoInicial, estado]
+      required: [clientId, accountNumber, accountType, initialBalance, status]
       properties:
-        clienteId:
+        clientId:
           type: string
           format: uuid
-        numeroCuenta:
+        accountNumber:
           type: string
           maxLength: 40
-        tipoCuenta:
+        accountType:
           type: string
-          enum: [AHORRO, CORRIENTE]
-        saldoInicial:
+          enum: [SAVINGS, CURRENT]
+        initialBalance:
           type: number
           format: double
           minimum: 0
-        estado:
+        status:
           type: boolean
-
-    CuentaUpdateRequestDto:
+    AccountUpdateRequestDto:
       type: object
-      required: [tipoCuenta, estado]
+      required: [accountType, status]
       properties:
-        tipoCuenta:
+        accountType:
           type: string
-          enum: [AHORRO, CORRIENTE]
-        estado:
+          enum: [SAVINGS, CURRENT]
+        status:
           type: boolean
-
-    CuentaPatchRequestDto:
+    AccountPatchRequestDto:
       type: object
       properties:
-        tipoCuenta:
+        accountType:
           type: string
-          enum: [AHORRO, CORRIENTE]
-        estado:
+          enum: [SAVINGS, CURRENT]
+        status:
           type: boolean
-
     ErrorModelDto:
       type: object
       required: [title, detail, instance, type]
@@ -279,26 +271,25 @@ components:
         type:
           type: string
           maxLength: 100
-          example: /current-account/v1/cuentas
+          example: /current-account/v1/accounts
         resource:
           type: string
-          example: CuentaController/createAccount
+          example: AccountsController/createAccount
         component:
           type: string
           example: TX-ACC-001
         backend:
           type: string
           example: '00045'
-
     ErrorListDto:
       type: object
       properties:
         code:
           type: string
-          example: 'ACC-001'
+          example: ACC-001
         message:
           type: string
           example: Technical validation error
         businessMessage:
           type: string
-          example: Numero de cuenta ya existe
+          example: Account number already exists
