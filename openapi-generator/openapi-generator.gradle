@@ -1,0 +1,49 @@
+// OpenAPI Generator reusable config for Spring WebFlux projects.
+
+def openApiProps = new Properties()
+def propsFile = file("$rootDir/openapi-generator/openapi-generator.properties")
+if (!propsFile.exists()) {
+    throw new GradleException("Missing properties file: ${propsFile}")
+}
+propsFile.withInputStream { openApiProps.load(it) }
+
+
+def openApiTaskName = openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_TASK_NAME', 'buildSpringServer')
+
+tasks.named('openApiGenerate') {
+    generatorName.set(openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_GENERATOR_NAME', 'spring'))
+    inputSpec.set("$rootDir/${openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_INPUT_SPEC', 'src/main/resources/openapi.yaml')}".toString())
+    outputDir.set("$rootDir/${openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_OUTPUT_DIR', 'build/generated')}".toString())
+    apiPackage.set(openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_API_PACKAGE', 'com.pichincha.services.server'))
+    modelPackage.set(openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_MODEL_PACKAGE', 'com.pichincha.services.server.models'))
+    library.set(openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_LIBRARY', 'spring-boot'))
+
+    configOptions.set([
+        useSpringBoot3                          : 'true',
+        useJakartaEe                            : 'true',
+        serializableModel                       : 'true',
+        dateLibrary                             : 'java8',
+        openApiNullable                         : 'false',
+        reactive                                : 'true',
+        apiFirst                                : 'false',
+        delegatePattern                         : 'true',
+        configPackage                           : openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_CONFIG_PACKAGE', 'com.pichincha.services.config'),
+        sourceFolder                            : openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_SOURCE_FOLDER', 'src/main/java'),
+        basePackage                             : openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_BASE_PACKAGE', 'com.pichincha'),
+        disallowAdditionalPropertiesIfNotPresent: 'true',
+        interfaceOnly                           : 'true'
+    ])
+}
+
+tasks.register(openApiTaskName) {
+    dependsOn tasks.named('openApiGenerate')
+}
+
+def openApiGeneratedSrc = "$rootDir/${openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_OUTPUT_DIR', 'build/generated')}/${openApiProps.getProperty('AYS_MSA_CR_ACCOUNT_OPENAPI_SOURCE_FOLDER', 'src/main/java')}"
+sourceSets.main.java.srcDirs += [openApiGeneratedSrc]
+
+if (tasks.findByName('compileJava') != null) {
+    tasks.named('compileJava') {
+        dependsOn tasks.named(openApiTaskName)
+    }
+}

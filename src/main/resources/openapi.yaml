@@ -36,7 +36,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Cuenta'
+                  $ref: '#/components/schemas/CuentaDto'
         '500':
           $ref: '#/components/responses/InternalError'
     post:
@@ -50,14 +50,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CuentaCreateRequest'
+              $ref: '#/components/schemas/CuentaCreateRequestDto'
       responses:
         '201':
           description: Account created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cuenta'
+                $ref: '#/components/schemas/CuentaDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '409':
@@ -79,7 +79,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cuenta'
+                $ref: '#/components/schemas/CuentaDto'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
@@ -94,14 +94,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CuentaUpdateRequest'
+              $ref: '#/components/schemas/CuentaUpdateRequestDto'
       responses:
         '200':
           description: Account updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cuenta'
+                $ref: '#/components/schemas/CuentaDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -118,14 +118,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CuentaPatchRequest'
+              $ref: '#/components/schemas/CuentaPatchRequestDto'
       responses:
         '200':
           description: Account patched
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cuenta'
+                $ref: '#/components/schemas/CuentaDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -173,28 +173,28 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorModel'
+            $ref: '#/components/schemas/ErrorModelDto'
     NotFound:
       description: Resource not found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorModel'
+            $ref: '#/components/schemas/ErrorModelDto'
     ConflictError:
       description: Business conflict
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorModel'
+            $ref: '#/components/schemas/ErrorModelDto'
     InternalError:
       description: Internal error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorModel'
+            $ref: '#/components/schemas/ErrorModelDto'
 
   schemas:
-    Cuenta:
+    CuentaDto:
       type: object
       required: [cuentaId, clienteId, numeroCuenta, tipoCuenta, saldoInicial, estado]
       properties:
@@ -217,7 +217,7 @@ components:
         estado:
           type: boolean
 
-    CuentaCreateRequest:
+    CuentaCreateRequestDto:
       type: object
       required: [clienteId, numeroCuenta, tipoCuenta, saldoInicial, estado]
       properties:
@@ -237,7 +237,7 @@ components:
         estado:
           type: boolean
 
-    CuentaUpdateRequest:
+    CuentaUpdateRequestDto:
       type: object
       required: [tipoCuenta, estado]
       properties:
@@ -247,7 +247,7 @@ components:
         estado:
           type: boolean
 
-    CuentaPatchRequest:
+    CuentaPatchRequestDto:
       type: object
       properties:
         tipoCuenta:
@@ -256,7 +256,7 @@ components:
         estado:
           type: boolean
 
-    ErrorModel:
+    ErrorModelDto:
       type: object
       required: [title, detail, instance, type]
       properties:
@@ -271,7 +271,7 @@ components:
         errors:
           type: array
           items:
-            $ref: '#/components/schemas/ErrorList'
+            $ref: '#/components/schemas/ErrorListDto'
         instance:
           type: string
           maxLength: 50
@@ -290,7 +290,7 @@ components:
           type: string
           example: '00045'
 
-    ErrorList:
+    ErrorListDto:
       type: object
       properties:
         code:
