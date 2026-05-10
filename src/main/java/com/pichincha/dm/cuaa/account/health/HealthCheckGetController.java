@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Mono;
 
-/**
- * Exposes a lightweight health-check endpoint that confirms the service is reachable and responsive, returning a stable status payload for runtime monitoring and deployment smoke tests.
- */
 @RestController
 public class HealthCheckGetController {
 
