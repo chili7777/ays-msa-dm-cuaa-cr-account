@@ -10,6 +10,7 @@ on:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/ays-msa-dm-cuaa-cr-account
+  DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
 jobs:
   build-and-deploy:
@@ -76,9 +77,8 @@ jobs:
             SPRING_PROFILE=${{ steps.target.outputs.profile }}
 
       - name: Trigger DigitalOcean deployment
-        if: steps.target.outputs.app_id != '' && secrets.DIGITALOCEAN_ACCESS_TOKEN != ''
+        if: steps.target.outputs.app_id != '' && env.DIGITALOCEAN_ACCESS_TOKEN != ''
         env:
-          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
           DO_APP_ID: ${{ steps.target.outputs.app_id }}
         run: |
           curl --fail --show-error --silent \
