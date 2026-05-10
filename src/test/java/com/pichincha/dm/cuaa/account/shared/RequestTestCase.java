@@ -10,6 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+/**
+ * Provides reusable WebTestClient helpers for endpoint assertions, reducing duplicated setup and standardizing request and response verification across controller and integration test classes.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class RequestTestCase {
 
