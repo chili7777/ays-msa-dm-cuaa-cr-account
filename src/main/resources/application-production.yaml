@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: ays-msa-dm-cuaa-cr-account-production
+
+server:
+  port: 8080
+
+# Production environment configuration
+app:
+  environment: production
+  log-level: WARN

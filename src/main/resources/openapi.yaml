@@ -1,0 +1,290 @@
+﻿openapi: 3.0.3
+info:
+  title: Current Account - Accounts API
+  version: 1.0.0
+  description: |
+    BIAN-like current account capability.
+    UUID is used as primary key. Each account references a client UUID.
+servers:
+  - url: /api/v1
+tags:
+  - name: Accounts
+paths:
+  /accounts:
+    get:
+      operationId: listAccounts
+      tags: [Accounts]
+      summary: List accounts
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - name: clientId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Account list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountDto'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      operationId: createAccount
+      tags: [Accounts]
+      summary: Create account
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCreateRequestDto'
+      responses:
+        '201':
+          description: Account created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /accounts/{accountId}:
+    get:
+      operationId: getAccountById
+      tags: [Accounts]
+      summary: Get account by id
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Account found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: replaceAccount
+      tags: [Accounts]
+      summary: Replace account
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountUpdateRequestDto'
+      responses:
+        '204':
+          description: Account replaced
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: patchAccount
+      tags: [Accounts]
+      summary: Patch account
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountPatchRequestDto'
+      responses:
+        '204':
+          description: Account patched
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteAccount
+      tags: [Accounts]
+      summary: Delete account (logical)
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '204':
+          description: Account deactivated
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    XGuid:
+      name: x-guid
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+    XApp:
+      name: x-app
+      in: header
+      required: true
+      schema:
+        type: string
+        maxLength: 50
+    AccountId:
+      name: accountId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModelDto'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModelDto'
+    ConflictError:
+      description: Business conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModelDto'
+    InternalError:
+      description: Internal error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModelDto'
+  schemas:
+    AccountDto:
+      type: object
+      required: [accountId, clientId, accountNumber, accountType, initialBalance, status]
+      properties:
+        accountId:
+          type: string
+          format: uuid
+        clientId:
+          type: string
+          format: uuid
+        accountNumber:
+          type: string
+          maxLength: 40
+        accountType:
+          type: string
+          enum: [SAVINGS, CURRENT]
+        initialBalance:
+          type: number
+          format: double
+          minimum: 0
+        status:
+          type: boolean
+    AccountCreateRequestDto:
+      type: object
+      required: [clientId, accountNumber, accountType, initialBalance, status]
+      properties:
+        accountId:
+          type: string
+          format: uuid
+        clientId:
+          type: string
+          format: uuid
+        accountNumber:
+          type: string
+          maxLength: 40
+        accountType:
+          type: string
+          enum: [SAVINGS, CURRENT]
+        initialBalance:
+          type: number
+          format: double
+          minimum: 0
+        status:
+          type: boolean
+    AccountUpdateRequestDto:
+      type: object
+      required: [accountType, status]
+      properties:
+        accountType:
+          type: string
+          enum: [SAVINGS, CURRENT]
+        status:
+          type: boolean
+    AccountPatchRequestDto:
+      type: object
+      properties:
+        accountType:
+          type: string
+          enum: [SAVINGS, CURRENT]
+        status:
+          type: boolean
+    ErrorModelDto:
+      type: object
+      required: [title, detail, instance, type]
+      properties:
+        title:
+          type: string
+          maxLength: 50
+          example: Bad Request
+        detail:
+          type: string
+          maxLength: 120
+          example: Validation error in request payload
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorListDto'
+        instance:
+          type: string
+          maxLength: 50
+          example: '0188'
+        type:
+          type: string
+          maxLength: 100
+          example: /current-account/v1/accounts
+        resource:
+          type: string
+          example: AccountsController/createAccount
+        component:
+          type: string
+          example: TX-ACC-001
+        backend:
+          type: string
+          example: '00045'
+    ErrorListDto:
+      type: object
+      properties:
+        code:
+          type: string
+          example: ACC-001
+        message:
+          type: string
+          example: Technical validation error
+        businessMessage:
+          type: string
+          example: Account number already exists
