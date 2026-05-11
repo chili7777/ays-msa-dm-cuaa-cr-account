@@ -16,6 +16,8 @@ public final class CustomerUpdateRequestDtoMother {
         dto.setAddress(FakerMother.faker().address().fullAddress());
         dto.setStatus(true);
         dto.setPassword(FakerMother.faker().internet().password());
+        dto.setGender(CustomerUpdateRequestDto.GenderEnum.OTHER);
+        dto.setAge(30);
         return dto;
     }
 }

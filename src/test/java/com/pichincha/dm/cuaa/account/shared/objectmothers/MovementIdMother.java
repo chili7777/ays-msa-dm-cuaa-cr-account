@@ -4,6 +4,6 @@ import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
 
 public final class MovementIdMother {
     public static MovementId random() {
-        return new MovementId(UuidMother.random());
+        return new MovementId(UuidMother.randomAsString());
     }
 }

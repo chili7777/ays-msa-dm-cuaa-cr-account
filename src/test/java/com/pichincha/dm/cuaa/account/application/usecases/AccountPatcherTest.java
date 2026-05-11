@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchAccountOutputPort;
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountIdMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.UuidMother;
 import org.junit.jupiter.api.Test;
@@ -26,7 +28,7 @@ final class AccountPatcherTest {
 
     @Test
     void given_partialAccount_when_patchAccount_then_patchAccount() {
-        String accountId = UuidMother.random().toString();
+        AccountId accountId = AccountIdMother.random();
         Account partialAccount = AccountMother.random();
 
         when(accountPersistence.patch(accountId, partialAccount)).thenReturn(Mono.empty());

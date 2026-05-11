@@ -1,6 +1,7 @@
 package com.pichincha.dm.cuaa.account.shared.objectmothers;
 
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.MovementCreateRequestDto;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public final class MovementCreateRequestDtoMother {
@@ -13,6 +14,7 @@ public final class MovementCreateRequestDtoMother {
         dto.setAccountId(UuidMother.random());
         dto.setMovementType(FakerMother.faker().options().option(MovementCreateRequestDto.MovementTypeEnum.values()));
         dto.setAmount(FakerMother.faker().number().randomDouble(2, 1, 1000));
+        dto.setMovementDate(OffsetDateTime.now());
         return dto;
     }
 

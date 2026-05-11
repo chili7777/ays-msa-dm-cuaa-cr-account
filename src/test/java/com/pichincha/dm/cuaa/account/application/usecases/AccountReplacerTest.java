@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.ReplaceAccountOutputPort;
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountIdMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.UuidMother;
 import org.junit.jupiter.api.Test;
@@ -26,7 +28,7 @@ final class AccountReplacerTest {
 
     @Test
     void given_account_when_replaceAccount_then_updateAccount() {
-        String accountId = UuidMother.random().toString();
+        AccountId accountId = AccountIdMother.random();
         Account account = AccountMother.random();
 
         when(accountPersistence.update(accountId, account)).thenReturn(Mono.empty());

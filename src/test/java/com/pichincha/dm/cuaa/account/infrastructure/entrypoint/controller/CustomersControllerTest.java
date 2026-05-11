@@ -35,21 +35,21 @@ class CustomersControllerTest extends RequestTestCase {
     }
 
     @Test
-    void given_validCustomerUpdateRequest_when_replaceCustomer_then_returnNoContentStatus() throws Exception {
+    void given_validCustomerUpdateRequest_when_replaceCustomer_then_returnOkStatus() throws Exception {
         String customerId = UuidMother.random().toString();
         CustomerUpdateRequestDto requestDto = CustomerUpdateRequestDtoMother.random();
         String requestBody = JsonMother.fromObject(requestDto);
 
-        assertRequestWithBody("PUT", "/customers/" + customerId, requestBody, 204, HttpHeadersMother.random());
+        assertRequestWithBody("PUT", "/customers/" + customerId, requestBody, 200, HttpHeadersMother.random());
     }
 
     @Test
-    void given_validCustomerPatchRequest_when_patchCustomer_then_returnNoContentStatus() throws Exception {
+    void given_validCustomerPatchRequest_when_patchCustomer_then_returnOkStatus() throws Exception {
         String customerId = UuidMother.random().toString();
         CustomerPatchRequestDto requestDto = CustomerPatchRequestDtoMother.random();
         String requestBody = JsonMother.fromObject(requestDto);
 
-        assertRequestWithBody("PATCH", "/customers/" + customerId, requestBody, 204, HttpHeadersMother.random());
+        assertRequestWithBody("PATCH", "/customers/" + customerId, requestBody, 200, HttpHeadersMother.random());
     }
 
     @Test

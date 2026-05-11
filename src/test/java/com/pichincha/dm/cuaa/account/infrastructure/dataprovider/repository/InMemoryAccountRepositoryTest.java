@@ -6,10 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
+import com.pichincha.dm.cuaa.account.domain.entities.Customer;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountIdMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountTypeMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerIdMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.StatusMother;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,8 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
     @Test
     void given_validAccount_when_save_then_accountIsPersisted() {
         Account account = AccountMother.random();
+        Customer customer = CustomerMother.withId(account.clientId());
+        repository.save(customer).block();
 
         repository.save(account).block();
         Account found = repository.findById(account.accountId()).block();
@@ -30,6 +35,8 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
     @Test
     void given_savedAccount_when_findById_then_returnAccount() {
         Account account = AccountMother.random();
+        Customer customer = CustomerMother.withId(account.clientId());
+        repository.save(customer).block();
 
         repository.save(account).block();
         Account found = repository.findById(account.accountId()).block();
@@ -51,6 +58,8 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
     void given_multipleAccounts_when_findAll_then_returnAll() {
         Account account1 = AccountMother.random();
         Account account2 = AccountMother.random();
+        repository.save(CustomerMother.withId(account1.clientId())).block();
+        repository.save(CustomerMother.withId(account2.clientId())).block();
 
         repository.save(account1).block();
         repository.save(account2).block();
@@ -64,6 +73,7 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
     @Test
     void given_savedAccount_when_update_then_accountIsUpdated() {
         Account account = AccountMother.random();
+        repository.save(CustomerMother.withId(account.clientId())).block();
         repository.save(account).block();
 
         Account updatedAccount = new Account(
@@ -85,6 +95,7 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
     @Test
     void given_savedAccount_when_patch_then_accountIsPartiallyUpdated() {
         Account account = AccountMother.random();
+        repository.save(CustomerMother.withId(account.clientId())).block();
         repository.save(account).block();
 
         Account partialAccount = new Account(
@@ -107,12 +118,13 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
     void given_savedAccount_when_deactivate_then_accountIsDeactivated() {
         Account account = AccountMother.create(
                 AccountIdMother.random(),
-                AccountMother.random().clientId(),
+                CustomerIdMother.random(),
                 AccountMother.random().accountNumber(),
                 AccountTypeMother.random(),
                 AccountMother.random().initialBalance(),
                 StatusMother.create(true)
         );
+        repository.save(CustomerMother.withId(account.clientId())).block();
         repository.save(account).block();
 
         repository.deactivate(account.accountId()).block();

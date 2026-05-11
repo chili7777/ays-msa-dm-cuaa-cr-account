@@ -12,4 +12,8 @@ public final class FakerMother {
     public static Faker faker() {
         return FAKER;
     }
+
+    public static Faker random() {
+        return FAKER;
+    }
 }

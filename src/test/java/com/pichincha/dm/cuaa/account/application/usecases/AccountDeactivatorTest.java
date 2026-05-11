@@ -5,6 +5,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.DeleteAccountOutputPort;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountIdMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.UuidMother;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +26,7 @@ final class AccountDeactivatorTest {
 
     @Test
     void given_existingAccountId_when_deleteAccount_then_deactivateAccount() {
-        String accountId = UuidMother.random().toString();
+        AccountId accountId = AccountIdMother.random();
 
         when(accountPersistence.deactivate(accountId)).thenReturn(Mono.empty());
 

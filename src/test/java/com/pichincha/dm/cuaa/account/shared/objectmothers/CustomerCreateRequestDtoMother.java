@@ -15,7 +15,9 @@ public final class CustomerCreateRequestDtoMother {
                 FakerMother.faker().phoneNumber().phoneNumber(),
                 FakerMother.faker().address().fullAddress(),
                 true,
-                FakerMother.faker().internet().password()
+                FakerMother.faker().internet().password(),
+                CustomerCreateRequestDto.GenderEnum.OTHER,
+                30
         );
     }
 
@@ -25,7 +27,9 @@ public final class CustomerCreateRequestDtoMother {
                                                   String phone,
                                                   String address,
                                                   Boolean status,
-                                                  String password) {
+                                                  String password,
+                                                  CustomerCreateRequestDto.GenderEnum gender,
+                                                  Integer age) {
         CustomerCreateRequestDto dto = new CustomerCreateRequestDto();
         dto.setName(name);
         dto.setIdentification(identification);
@@ -34,6 +38,8 @@ public final class CustomerCreateRequestDtoMother {
         dto.setAddress(address);
         dto.setStatus(status);
         dto.setPassword(password);
+        dto.setGender(gender);
+        dto.setAge(age);
         return dto;
     }
 }

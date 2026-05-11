@@ -27,7 +27,7 @@ final class AccountFinderTest {
 
     @Test
     void given_existingAccountId_when_getAccountById_then_returnAccount() {
-        AccountId accountId = new AccountId(UuidMother.random());
+        AccountId accountId = new AccountId(UuidMother.randomAsString());
         Account account = AccountMother.random();
 
         when(accountPersistence.findById(accountId)).thenReturn(Mono.just(account));

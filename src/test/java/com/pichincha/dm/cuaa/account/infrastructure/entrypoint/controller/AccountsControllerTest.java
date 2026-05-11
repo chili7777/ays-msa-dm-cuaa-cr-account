@@ -10,14 +10,25 @@ import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountUpdateRequestDt
 import com.pichincha.dm.cuaa.account.shared.objectmothers.HttpHeadersMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.JsonMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.UuidMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerMother;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateCustomerOutputPort;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class AccountsControllerTest extends RequestTestCase {
+
+    @Autowired
+    private CreateCustomerOutputPort createCustomerOutputPort;
 
     @Test
     void given_validAccountCreateRequest_when_createAccount_then_returnCreatedStatus() throws Exception {
         AccountCreateRequestDto requestDto = AccountCreateRequestDtoMother.random();
+        
+        // Save customer to satisfy referential integrity
+        createCustomerOutputPort.save(CustomerMother.withId(new CustomerId(requestDto.getClientId().toString()))).block();
+
         String requestBody = JsonMother.fromObject(requestDto);
 
         assertRequestWithBody("POST", "/accounts", requestBody, 201, HttpHeadersMother.random());
