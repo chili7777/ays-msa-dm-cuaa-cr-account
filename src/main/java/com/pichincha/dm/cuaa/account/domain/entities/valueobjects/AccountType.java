@@ -20,13 +20,13 @@ public class AccountType implements ValueObject<String> {
         }
         if (!isValidType(value)) {
             throw new IllegalArgumentException(
-                    "Invalid account type: " + value + ". Allowed types: SAVINGS, CHECKING, BUSINESS"
+                    "Invalid account type: " + value + ". Allowed types: SAVINGS, CURRENT"
             );
         }
     }
 
     private boolean isValidType(String type) {
-        return type.equals("SAVINGS") || type.equals("CHECKING") || type.equals("BUSINESS");
+        return type.equals("SAVINGS") || type.equals("CURRENT");
     }
 
     @Override
