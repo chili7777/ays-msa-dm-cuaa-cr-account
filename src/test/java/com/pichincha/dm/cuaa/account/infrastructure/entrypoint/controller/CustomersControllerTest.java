@@ -1,60 +1,60 @@
 package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import com.pichincha.dm.cuaa.account.application.usecases.ports.input.*;
-import com.pichincha.dm.cuaa.account.domain.entities.Customer;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerCreateRequestDto;
-import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.CustomerHttpRequestMapper;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerPatchRequestDto;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerUpdateRequestDto;
 import com.pichincha.dm.cuaa.account.shared.RequestTestCase;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerMother;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerCreateRequestDtoMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerPatchRequestDtoMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerUpdateRequestDtoMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.HttpHeadersMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.JsonMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.UuidMother;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import reactor.core.publisher.Mono;
 
-@WebFluxTest(controllers = CustomersController.class)
-final class CustomersControllerTest extends RequestTestCase {
+class CustomersControllerTest extends RequestTestCase {
 
-    @MockitoBean
-    private CreateCustomerInputPort createCustomerUseCase;
-    @MockitoBean
-    private ListCustomersInputPort listCustomersUseCase;
-    @MockitoBean
-    private GetCustomerByIdInputPort getCustomerByIdUseCase;
-    @MockitoBean
-    private ReplaceCustomerInputPort replaceCustomerUseCase;
-    @MockitoBean
-    private PatchCustomerInputPort patchCustomerUseCase;
-    @MockitoBean
-    private DeleteCustomerInputPort deleteCustomerUseCase;
-    @MockitoBean
-    private CustomerHttpRequestMapper customerMapper;
+    @Test
+    void given_validCustomerCreateRequest_when_createCustomer_then_returnCreatedStatus() throws Exception {
+        CustomerCreateRequestDto requestDto = CustomerCreateRequestDtoMother.random();
+        String requestBody = JsonMother.fromObject(requestDto);
 
-    @BeforeEach
-    void setUp() {
-        super.setUp();
+        assertRequestWithBody("POST", "/customers", requestBody, 201, HttpHeadersMother.random());
     }
 
     @Test
-    void given_validCustomerRequest_when_postCustomer_then_return201() {
-        CustomerCreateRequestDto request = new CustomerCreateRequestDto();
-        request.setName("John Doe");
-        request.setIdentification("1234567890");
-        request.setEmail("john@example.com");
-        request.setPhone("0999999999");
-        request.setAddress("Street 123");
-        request.setStatus(true);
-        request.setPassword("password123");
+    void given_identificationAndStatus_when_listCustomers_then_returnOkStatus() throws Exception {
+        String identification = "1234567890";
+        assertRequest("GET", "/customers?identification=" + identification + "&status=true", 200, HttpHeadersMother.random());
+    }
 
-        Customer customer = CustomerMother.random();
+    @Test
+    void given_customerId_when_getCustomerById_then_returnOkStatus() throws Exception {
+        String customerId = UuidMother.random().toString();
+        assertRequest("GET", "/customers/" + customerId, 200, HttpHeadersMother.random());
+    }
 
-        when(customerMapper.toCustomer(any(CustomerCreateRequestDto.class))).thenReturn(customer);
-        when(createCustomerUseCase.createCustomer(any(Customer.class))).thenReturn(Mono.empty());
+    @Test
+    void given_validCustomerUpdateRequest_when_replaceCustomer_then_returnNoContentStatus() throws Exception {
+        String customerId = UuidMother.random().toString();
+        CustomerUpdateRequestDto requestDto = CustomerUpdateRequestDtoMother.random();
+        String requestBody = JsonMother.fromObject(requestDto);
 
-        assertPostResponse("/customers", request, 201);
+        assertRequestWithBody("PUT", "/customers/" + customerId, requestBody, 204, HttpHeadersMother.random());
+    }
+
+    @Test
+    void given_validCustomerPatchRequest_when_patchCustomer_then_returnNoContentStatus() throws Exception {
+        String customerId = UuidMother.random().toString();
+        CustomerPatchRequestDto requestDto = CustomerPatchRequestDtoMother.random();
+        String requestBody = JsonMother.fromObject(requestDto);
+
+        assertRequestWithBody("PATCH", "/customers/" + customerId, requestBody, 204, HttpHeadersMother.random());
+    }
+
+    @Test
+    void given_customerId_when_deleteCustomer_then_returnNoContentStatus() throws Exception {
+        String customerId = UuidMother.random().toString();
+        assertRequest("DELETE", "/customers/" + customerId, 204, HttpHeadersMother.random());
     }
 }

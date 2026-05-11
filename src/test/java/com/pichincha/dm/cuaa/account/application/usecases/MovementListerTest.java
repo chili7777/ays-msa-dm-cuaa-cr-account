@@ -30,11 +30,11 @@ final class MovementListerTest {
         Movement movement2 = MovementMother.random();
         List<Movement> expectedMovements = List.of(movement1, movement2);
 
-        when(movementPersistence.findAll()).thenReturn(Flux.fromIterable(expectedMovements));
+        when(movementPersistence.findAllMovements()).thenReturn(Flux.fromIterable(expectedMovements));
 
         List<Movement> actualMovements = movementLister.listMovements().collectList().block();
 
         assertEquals(expectedMovements, actualMovements);
-        verify(movementPersistence).findAll();
+        verify(movementPersistence).findAllMovements();
     }
 }

@@ -4,5 +4,5 @@ import com.pichincha.dm.cuaa.account.domain.entities.Customer;
 import reactor.core.publisher.Flux;
 
 public interface ListCustomersOutputPort {
-    Flux<Customer> findAll();
+    Flux<Customer> findAllCustomers();
 }

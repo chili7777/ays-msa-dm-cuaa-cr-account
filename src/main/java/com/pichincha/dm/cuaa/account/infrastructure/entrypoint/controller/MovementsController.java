@@ -50,7 +50,7 @@ public class MovementsController implements MovementsApi {
     }
 
     @Override
-    public Mono<ResponseEntity<Flux<MovementDto>>> listMovements(UUID xGuid, String xApp, UUID accountId, String fromDate, String toDate, String movementType, ServerWebExchange exchange) {
+    public Mono<ResponseEntity<Flux<MovementDto>>> listMovements(UUID xGuid, String xApp, UUID accountId, java.time.LocalDate fromDate, java.time.LocalDate toDate, String movementType, ServerWebExchange exchange) {
         return Mono.just(ResponseEntity.ok(
                 listMovementsUseCase.listMovements()
                         .map(movementMapper::toMovementDto)));

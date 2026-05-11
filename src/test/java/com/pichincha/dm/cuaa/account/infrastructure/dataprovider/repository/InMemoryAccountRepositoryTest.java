@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountIdMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountTypeMother;
@@ -20,7 +21,7 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
         Account account = AccountMother.random();
 
         repository.save(account).block();
-        Account found = repository.findById(account.accountId().getValue()).block();
+        Account found = repository.findById(account.accountId()).block();
 
         assertNotNull(found);
         assertEquals(account.accountId(), found.accountId());
@@ -31,7 +32,7 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
         Account account = AccountMother.random();
 
         repository.save(account).block();
-        Account found = repository.findById(account.accountId().getValue()).block();
+        Account found = repository.findById(account.accountId()).block();
 
         assertNotNull(found);
         assertTrue(found.accountId().equals(account.accountId()));
@@ -39,7 +40,7 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
 
     @Test
     void given_nonExistingAccountId_when_findById_then_returnEmpty() {
-        String nonExistingAccountId = AccountIdMother.random().getValue();
+        AccountId nonExistingAccountId = AccountIdMother.random();
 
         boolean isPresent = repository.findById(nonExistingAccountId).blockOptional().isPresent();
 
@@ -54,7 +55,7 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
         repository.save(account1).block();
         repository.save(account2).block();
 
-        List<Account> all = repository.findAll(null, null).collectList().block();
+        List<Account> all = repository.findAllAccounts().collectList().block();
 
         assertNotNull(all);
         assertTrue(all.size() >= 2);
@@ -74,8 +75,8 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
                 account.status()
         );
 
-        repository.update(account.accountId().getValue(), updatedAccount).block();
-        Account found = repository.findById(account.accountId().getValue()).block();
+        repository.update(account.accountId(), updatedAccount).block();
+        Account found = repository.findById(account.accountId()).block();
 
         assertNotNull(found);
         assertEquals(updatedAccount.accountType(), found.accountType());
@@ -93,8 +94,8 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
                 StatusMother.random()
         );
 
-        repository.patch(account.accountId().getValue(), partialAccount).block();
-        Account found = repository.findById(account.accountId().getValue()).block();
+        repository.patch(account.accountId(), partialAccount).block();
+        Account found = repository.findById(account.accountId()).block();
 
         assertNotNull(found);
         assertEquals(partialAccount.accountType(), found.accountType());
@@ -114,8 +115,8 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
         );
         repository.save(account).block();
 
-        repository.deactivate(account.accountId().getValue()).block();
-        Account found = repository.findById(account.accountId().getValue()).block();
+        repository.deactivate(account.accountId()).block();
+        Account found = repository.findById(account.accountId()).block();
 
         assertNotNull(found);
         assertFalse(found.status().getValue());

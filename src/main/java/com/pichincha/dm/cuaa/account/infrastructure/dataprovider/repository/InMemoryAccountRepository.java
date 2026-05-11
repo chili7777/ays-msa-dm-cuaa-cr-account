@@ -47,7 +47,7 @@ public final class InMemoryAccountRepository implements
     }
 
     @Override
-    public Flux<Customer> findAll() {
+    public Flux<Customer> findAllCustomers() {
         return Flux.fromIterable(customers.values()).map(customerMapper::toCustomer);
     }
 
@@ -116,9 +116,10 @@ public final class InMemoryAccountRepository implements
     }
 
     @Override
-    public Flux<Account> findAll() {
+    public Flux<Account> findAllAccounts() {
         return Flux.fromIterable(accounts.values()).map(accountMapper::toAccount);
     }
+
 
     @Override
     public Mono<Account> findById(AccountId accountId) {
@@ -180,7 +181,7 @@ public final class InMemoryAccountRepository implements
     }
 
     @Override
-    public Flux<Movement> findAll() {
+    public Flux<Movement> findAllMovements() {
         return Flux.fromIterable(movements.values()).map(movementMapper::toMovement);
     }
 

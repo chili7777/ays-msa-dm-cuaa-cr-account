@@ -30,11 +30,11 @@ final class CustomerListerTest {
         Customer customer2 = CustomerMother.random();
         List<Customer> expectedCustomers = List.of(customer1, customer2);
 
-        when(customerPersistence.findAll()).thenReturn(Flux.fromIterable(expectedCustomers));
+        when(customerPersistence.findAllCustomers()).thenReturn(Flux.fromIterable(expectedCustomers));
 
         List<Customer> actualCustomers = customerLister.listCustomers().collectList().block();
 
         assertEquals(expectedCustomers, actualCustomers);
-        verify(customerPersistence).findAll();
+        verify(customerPersistence).findAllCustomers();
     }
 }

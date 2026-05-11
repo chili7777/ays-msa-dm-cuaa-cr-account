@@ -15,6 +15,6 @@ public class MovementLister implements ListMovementsInputPort {
 
     @Override
     public Flux<Movement> listMovements() {
-        return repository.findAll();
+        return repository.findAllMovements();
     }
 }

@@ -15,6 +15,6 @@ public class AccountLister implements ListAccountsInputPort {
 
     @Override
     public Flux<Account> listAccounts() {
-        return accountPersistence.findAll();
+        return accountPersistence.findAllAccounts();
     }
 }

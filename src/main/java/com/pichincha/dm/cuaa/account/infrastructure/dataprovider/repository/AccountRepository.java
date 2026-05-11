@@ -25,7 +25,7 @@ public class AccountRepository implements CreateAccountOutputPort, ListAccountsO
     }
 
     @Override
-    public Flux<Account> findAll() {
+    public Flux<Account> findAllAccounts() {
         return Flux.empty();
     }
 

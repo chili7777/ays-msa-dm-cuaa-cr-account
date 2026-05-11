@@ -4,5 +4,5 @@ import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import reactor.core.publisher.Flux;
 
 public interface ListMovementsOutputPort {
-    Flux<Movement> findAll();
+    Flux<Movement> findAllMovements();
 }

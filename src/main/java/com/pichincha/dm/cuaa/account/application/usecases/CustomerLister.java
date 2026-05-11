@@ -15,6 +15,6 @@ public class CustomerLister implements ListCustomersInputPort {
 
     @Override
     public Flux<Customer> listCustomers() {
-        return repository.findAll();
+        return repository.findAllCustomers();
     }
 }
