@@ -4,6 +4,7 @@
 
 - `AYS_MSA_CR_ACCOUNT_PROFILE` (`development`, `staging`, `production`)
 - `AYS_MSA_CR_ACCOUNT_PORT` (default `8080`)
+- `CORS_ALLOWED_ORIGINS` (default `*`)
 
 ## Naming convention applied in this repository
 
