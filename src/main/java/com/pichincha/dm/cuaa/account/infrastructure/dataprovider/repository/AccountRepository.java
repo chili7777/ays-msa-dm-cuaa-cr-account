@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-@Profile("!test & !local & !default & !development")
+@Profile("!test & !local & !default & !development & !staging & !production")
 public class AccountRepository implements CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort {
 
     @Override

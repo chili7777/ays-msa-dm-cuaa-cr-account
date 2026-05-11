@@ -18,7 +18,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-@Profile({"test", "local", "default", "development"})
+@Profile({"test", "local", "default", "development", "staging", "production"})
 @RequiredArgsConstructor
 public final class InMemoryAccountRepository implements CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort {
 
