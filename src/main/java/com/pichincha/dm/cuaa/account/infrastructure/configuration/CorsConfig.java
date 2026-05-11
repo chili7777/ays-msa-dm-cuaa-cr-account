@@ -13,10 +13,15 @@ public class CorsConfig implements WebFluxConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins(allowedOrigins.split(","))
+        var mapping = registry.addMapping("/**")
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
+
+        if ("*".equals(allowedOrigins)) {
+            mapping.allowedOriginPatterns("*");
+        } else {
+            mapping.allowedOrigins(allowedOrigins.split(","));
+        }
     }
 }
