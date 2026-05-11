@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.ClientId;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.mapper.AccountRepositoryMapperImpl;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 final class InMemoryAccountRepositoryTest {
-    private static final UUID CLIENT_ID = UUID.fromString("d7f1f2f8-3a64-4305-a7ce-d9f06174bcb5");
+    private static final ClientId CLIENT_ID = new ClientId("d7f1f2f8-3a64-4305-a7ce-d9f06174bcb5");
     private static final String ACCOUNT_NUMBER = "ACC-999-ALPHA-42";
     private static final String ACCOUNT_TYPE = "SAVINGS";
     private static final Double INITIAL_BALANCE = 157.89;

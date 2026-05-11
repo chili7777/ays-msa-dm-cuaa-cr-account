@@ -1,8 +1,8 @@
 package com.pichincha.dm.cuaa.account.domain.entities;
 
-import java.util.UUID;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.ClientId;
 
-public record Account(UUID clientId,
+public record Account(ClientId clientId,
                       String accountNumber,
                       String accountType,
                       Double initialBalance,

@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.ClientId;
 import com.pichincha.dm.cuaa.account.domain.usecases.ports.output.CreateAccountOutputPort;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,8 @@ final class AccountCreatorTest {
 
     @Test
     void given_validAccountData_when_createAccount_then_persistAccount() {
-        UUID clientId = UUID.fromString("d7f1f2f8-3a64-4305-a7ce-d9f06174bcb5");
+        String clientIdValue = "d7f1f2f8-3a64-4305-a7ce-d9f06174bcb5";
+        ClientId clientId = new ClientId(clientIdValue);
         String accountNumber = "ACC-999-ALPHA-42";
         String accountType = "SAVINGS";
         Double initialBalance = 157.89;
