@@ -1,6 +1,7 @@
 package com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities;
 
-public record AccountEntity(String clientId,
+public record AccountEntity(String accountId,
+                            String clientId,
                             String accountNumber,
                             String accountType,
                             Double initialBalance,

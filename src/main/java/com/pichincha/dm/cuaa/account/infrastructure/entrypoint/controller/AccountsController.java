@@ -1,7 +1,15 @@
 package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller;
 
-import com.pichincha.dm.cuaa.account.domain.usecases.ports.input.CreateAccountInputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.input.CreateAccountInputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.input.DeleteAccountInputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.input.GetAccountByIdInputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.input.ListAccountsInputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.input.PatchAccountInputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.input.ReplaceAccountInputPort;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountCreateRequestDto;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountDto;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountPatchRequestDto;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountUpdateRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.AccountHttpRequestMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -16,7 +25,13 @@ import reactor.core.publisher.Mono;
 public class AccountsController implements AccountsApi {
 
 	private static final ResponseEntity<Void> CREATED_RESPONSE = ResponseEntity.status(HttpStatus.CREATED).build();
+	private static final ResponseEntity<Void> NO_CONTENT_RESPONSE = ResponseEntity.noContent().build();
 	private final CreateAccountInputPort createAccountUseCase;
+	private final ListAccountsInputPort listAccountsUseCase;
+	private final GetAccountByIdInputPort getAccountByIdUseCase;
+	private final ReplaceAccountInputPort replaceAccountUseCase;
+	private final PatchAccountInputPort patchAccountUseCase;
+	private final DeleteAccountInputPort deleteAccountUseCase;
 	private final AccountHttpRequestMapper accountHttpRequestMapper;
 
 	@Override
@@ -30,4 +45,57 @@ public class AccountsController implements AccountsApi {
 				.thenReturn(CREATED_RESPONSE);
 	}
 
+	@Override
+	public Mono<ResponseEntity<Flux<AccountDto>>> listAccounts(UUID xGuid,
+															   String xApp,
+															   UUID clientId,
+															   Boolean status,
+															   ServerWebExchange exchange) {
+		return Mono.just(ResponseEntity.ok(
+				listAccountsUseCase.listAccounts(clientId != null ? clientId.toString() : null, status)
+						.map(accountHttpRequestMapper::toAccountDto)));
+	}
+
+	@Override
+	public Mono<ResponseEntity<AccountDto>> getAccountById(UUID xGuid,
+														  String xApp,
+														  UUID accountId,
+														  ServerWebExchange exchange) {
+		return getAccountByIdUseCase.getAccountById(accountId.toString())
+				.map(accountHttpRequestMapper::toAccountDto)
+				.map(ResponseEntity::ok);
+	}
+
+	@Override
+	public Mono<ResponseEntity<Void>> replaceAccount(UUID xGuid,
+													String xApp,
+													UUID accountId,
+													Mono<AccountUpdateRequestDto> accountUpdateRequestDto,
+													ServerWebExchange exchange) {
+		return accountUpdateRequestDto
+				.map(accountHttpRequestMapper::toAccount)
+				.flatMap(account -> replaceAccountUseCase.replaceAccount(accountId.toString(), account))
+				.thenReturn(NO_CONTENT_RESPONSE);
+	}
+
+	@Override
+	public Mono<ResponseEntity<Void>> patchAccount(UUID xGuid,
+												  String xApp,
+												  UUID accountId,
+												  Mono<AccountPatchRequestDto> accountPatchRequestDto,
+												  ServerWebExchange exchange) {
+		return accountPatchRequestDto
+				.map(accountHttpRequestMapper::toAccount)
+				.flatMap(account -> patchAccountUseCase.patchAccount(accountId.toString(), account))
+				.thenReturn(NO_CONTENT_RESPONSE);
+	}
+
+	@Override
+	public Mono<ResponseEntity<Void>> deleteAccount(UUID xGuid,
+												   String xApp,
+												   UUID accountId,
+												   ServerWebExchange exchange) {
+		return deleteAccountUseCase.deleteAccount(accountId.toString())
+				.thenReturn(NO_CONTENT_RESPONSE);
+	}
 }

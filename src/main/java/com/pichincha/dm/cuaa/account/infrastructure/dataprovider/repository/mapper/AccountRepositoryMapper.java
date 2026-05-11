@@ -1,6 +1,7 @@
 package com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.mapper;
 
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.ClientId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.AccountNumber;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.AccountType;
@@ -20,6 +21,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface AccountRepositoryMapper {
 
 	// Account (domain) → AccountEntity (infrastructure: raw primitives for DB)
+	@Mapping(target = "accountId",      source = "accountId",      qualifiedByName = "fromAccountIdToString")
 	@Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "fromClientIdToString")
 	@Mapping(target = "accountNumber",  source = "accountNumber",  qualifiedByName = "fromValueObjectToString")
 	@Mapping(target = "accountType",    source = "accountType",    qualifiedByName = "fromValueObjectToString")
@@ -28,6 +30,7 @@ public interface AccountRepositoryMapper {
 	AccountEntity toAccountEntity(Account account);
 
 	// AccountEntity (infrastructure: raw primitives) → Account (domain)
+	@Mapping(target = "accountId",      source = "accountId",      qualifiedByName = "toAccountId")
 	@Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "toClientId")
 	@Mapping(target = "accountNumber",  source = "accountNumber",  qualifiedByName = "toAccountNumber")
 	@Mapping(target = "accountType",    source = "accountType",    qualifiedByName = "toAccountType")
@@ -37,50 +40,60 @@ public interface AccountRepositoryMapper {
 
 	// ---- from value objects (domain → raw primitives) ----
 
+	@Named("fromAccountIdToString")
+	default String fromAccountIdToString(AccountId accountId) {
+		return accountId == null ? null : accountId.getValue();
+	}
+
 	@Named("fromClientIdToString")
 	default String fromClientIdToString(ClientId clientId) {
-		return clientId.getValue();
+		return clientId == null ? null : clientId.getValue();
 	}
 
 	@Named("fromValueObjectToString")
 	default String fromValueObjectToString(ValueObject<String> valueObject) {
-		return valueObject.getValue();
+		return valueObject == null ? null : valueObject.getValue();
 	}
 
 	@Named("fromValueObjectToDouble")
 	default Double fromValueObjectToDouble(ValueObject<Double> valueObject) {
-		return valueObject.getValue();
+		return valueObject == null ? null : valueObject.getValue();
 	}
 
 	@Named("fromValueObjectToBoolean")
 	default Boolean fromValueObjectToBoolean(ValueObject<Boolean> valueObject) {
-		return valueObject.getValue();
+		return valueObject == null ? null : valueObject.getValue();
 	}
 
 	// ---- to value objects (raw primitives → domain) ----
 
+	@Named("toAccountId")
+	default AccountId toAccountId(String accountId) {
+		return accountId == null ? null : new AccountId(accountId);
+	}
+
 	@Named("toClientId")
 	default ClientId toClientId(String clientId) {
-		return new ClientId(clientId);
+		return clientId == null ? null : new ClientId(clientId);
 	}
 
 	@Named("toAccountNumber")
 	default AccountNumber toAccountNumber(String accountNumber) {
-		return new AccountNumber(accountNumber);
+		return accountNumber == null ? null : new AccountNumber(accountNumber);
 	}
 
 	@Named("toAccountType")
 	default AccountType toAccountType(String accountType) {
-		return new AccountType(accountType);
+		return accountType == null ? null : new AccountType(accountType);
 	}
 
 	@Named("toInitialBalance")
 	default InitialBalance toInitialBalance(Double initialBalance) {
-		return new InitialBalance(initialBalance);
+		return initialBalance == null ? null : new InitialBalance(initialBalance);
 	}
 
 	@Named("toStatus")
 	default Status toStatus(Boolean status) {
-		return new Status(status);
+		return status == null ? null : new Status(status);
 	}
 }

@@ -99,8 +99,19 @@ public abstract class RequestTestCase {
                 .uri(endpoint)
                 .exchange()
                 .expectStatus()
-                .isEqualTo(expectedStatusCode)
-                .expectBody()
-                .isEmpty();
+                .isEqualTo(expectedStatusCode);
+    }
+
+    protected void assertRequest(String method,
+                                 String endpoint,
+                                 Integer expectedStatusCode,
+                                 HttpHeaders headers) throws Exception {
+
+        webTestClient.method(HttpMethod.valueOf(method))
+                .uri(endpoint)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .exchange()
+                .expectStatus()
+                .isEqualTo(expectedStatusCode);
     }
 }
