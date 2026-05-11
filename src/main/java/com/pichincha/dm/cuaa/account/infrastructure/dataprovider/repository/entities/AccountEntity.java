@@ -1,8 +1,6 @@
 package com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities;
 
-import com.pichincha.dm.cuaa.account.domain.entities.identifiers.ClientId;
-
-public record AccountEntity(ClientId clientId,
+public record AccountEntity(String clientId,
                             String accountNumber,
                             String accountType,
                             Double initialBalance,

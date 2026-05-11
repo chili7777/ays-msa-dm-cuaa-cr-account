@@ -23,7 +23,7 @@ public final class InMemoryAccountRepository implements CreateAccountOutputPort 
     public Mono<Void> save(Account account) {
         return Mono.fromRunnable(() -> {
             AccountEntity accountEntity = accountRepositoryMapper.toAccountEntity(account);
-            accounts.put(account.accountNumber(), accountEntity);
+            accounts.put(accountEntity.accountNumber(), accountEntity);
         });
     }
 
