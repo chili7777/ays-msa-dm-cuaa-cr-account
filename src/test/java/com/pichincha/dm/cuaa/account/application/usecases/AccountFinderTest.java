@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+
 @ExtendWith(MockitoExtension.class)
 final class AccountFinderTest {
 
@@ -25,7 +27,7 @@ final class AccountFinderTest {
 
     @Test
     void given_existingAccountId_when_getAccountById_then_returnAccount() {
-        String accountId = UuidMother.random().toString();
+        AccountId accountId = new AccountId(UuidMother.random());
         Account account = AccountMother.random();
 
         when(accountPersistence.findById(accountId)).thenReturn(Mono.just(account));

@@ -6,9 +6,8 @@ import lombok.Value;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
-public class ClientId extends Identifier {
-
-    public ClientId(String value) {
+public class MovementId extends Identifier {
+    public MovementId(String value) {
         super(value);
         ensureValidUuid(value);
     }

@@ -25,14 +25,12 @@ final class AccountListerTest {
     private AccountLister accountLister;
 
     @Test
-    void given_criteria_when_listAccounts_then_returnAccounts() {
-        String clientId = UuidMother.random().toString();
-        Boolean status = true;
+    void given_existingAccounts_when_listAccounts_then_returnAccounts() {
         Account account = AccountMother.random();
 
-        when(accountPersistence.findAll(clientId, status)).thenReturn(Flux.just(account));
+        when(accountPersistence.findAll()).thenReturn(Flux.just(account));
 
-        List<Account> accounts = accountLister.listAccounts(clientId, status).collectList().block();
+        List<Account> accounts = accountLister.listAccounts().collectList().block();
 
         assert accounts != null;
         assertEquals(1, accounts.size());

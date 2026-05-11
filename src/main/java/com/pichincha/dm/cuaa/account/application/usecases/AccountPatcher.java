@@ -7,6 +7,8 @@ import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchAcco
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+
 @UseCaseService
 @RequiredArgsConstructor
 public class AccountPatcher implements PatchAccountInputPort {
@@ -14,7 +16,7 @@ public class AccountPatcher implements PatchAccountInputPort {
     private final PatchAccountOutputPort accountPersistence;
 
     @Override
-    public Mono<Void> patchAccount(String accountId, Account partialAccount) {
+    public Mono<Void> patchAccount(AccountId accountId, Account partialAccount) {
         return accountPersistence.patch(accountId, partialAccount);
     }
 }

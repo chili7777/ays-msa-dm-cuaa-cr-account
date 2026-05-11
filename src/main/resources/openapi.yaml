@@ -1,15 +1,148 @@
 ﻿openapi: 3.0.3
 info:
-  title: Current Account - Accounts API
+  title: Current Account - Unified API
   version: 1.0.0
   description: |
-    BIAN-like current account capability.
-    UUID is used as primary key. Each account references a client UUID.
+    BIAN-like current account capability unified microservice.
+    Manages Customers, Accounts and Movements in a single domain.
 servers:
   - url: /api/v1
 tags:
+  - name: Customers
   - name: Accounts
+  - name: Movements
 paths:
+  /customers:
+    get:
+      operationId: listCustomers
+      tags: [Customers]
+      summary: List customers
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - name: identification
+          in: query
+          schema:
+            type: string
+            maxLength: 20
+        - name: status
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Customer list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerDto'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      operationId: createCustomer
+      tags: [Customers]
+      summary: Create customer
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreateRequestDto'
+      responses:
+        '201':
+          description: Customer created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /customers/{customerId}:
+    get:
+      operationId: getCustomerById
+      tags: [Customers]
+      summary: Get customer by id
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CustomerIdPath'
+      responses:
+        '200':
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: replaceCustomer
+      tags: [Customers]
+      summary: Replace customer
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CustomerIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerUpdateRequestDto'
+      responses:
+        '200':
+          description: Customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: patchCustomer
+      tags: [Customers]
+      summary: Patch customer
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CustomerIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerPatchRequestDto'
+      responses:
+        '200':
+          description: Customer patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteCustomer
+      tags: [Customers]
+      summary: Delete customer (logical)
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CustomerIdPath'
+      responses:
+        '204':
+          description: Customer deactivated
+        '404':
+          $ref: '#/components/responses/NotFound'
   /accounts:
     get:
       operationId: listAccounts
@@ -68,7 +201,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
-        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/AccountIdPath'
       responses:
         '200':
           description: Account found
@@ -85,7 +218,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
-        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/AccountIdPath'
       requestBody:
         required: true
         content:
@@ -106,7 +239,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
-        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/AccountIdPath'
       requestBody:
         required: true
         content:
@@ -127,10 +260,152 @@ paths:
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
-        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/AccountIdPath'
       responses:
         '204':
           description: Account deactivated
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /movements:
+    get:
+      operationId: listMovements
+      tags: [Movements]
+      summary: List movements
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - name: accountId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: fromDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: movementType
+          in: query
+          schema:
+            type: string
+            enum: [DEPOSIT, WITHDRAWAL]
+      responses:
+        '200':
+          description: Movement list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovementDto'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      operationId: createMovement
+      tags: [Movements]
+      summary: Create movement
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovementCreateRequestDto'
+      responses:
+        '201':
+          description: Movement created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /movements/{movementId}:
+    get:
+      operationId: getMovementById
+      tags: [Movements]
+      summary: Get movement by id
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/MovementId'
+      responses:
+        '200':
+          description: Movement found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovementDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: replaceMovement
+      tags: [Movements]
+      summary: Replace movement
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/MovementId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovementUpdateRequestDto'
+      responses:
+        '200':
+          description: Movement updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovementDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: patchMovement
+      tags: [Movements]
+      summary: Patch movement
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/MovementId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovementPatchRequestDto'
+      responses:
+        '200':
+          description: Movement patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovementDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteMovement
+      tags: [Movements]
+      summary: Delete movement (logical)
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/MovementId'
+      responses:
+        '204':
+          description: Movement removed
         '404':
           $ref: '#/components/responses/NotFound'
 components:
@@ -149,8 +424,22 @@ components:
       schema:
         type: string
         maxLength: 50
-    AccountId:
+    CustomerIdPath:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    AccountIdPath:
       name: accountId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    MovementId:
+      name: movementId
       in: path
       required: true
       schema:
@@ -182,6 +471,100 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorModelDto'
   schemas:
+    PersonBaseDto:
+      type: object
+      required: [name, gender, age, identification, address, phone, email]
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        gender:
+          type: string
+          enum: [MALE, FEMALE, OTHER]
+        age:
+          type: integer
+          minimum: 0
+          maximum: 130
+        identification:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+          maxLength: 180
+        phone:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          maxLength: 120
+    CustomerDto:
+      allOf:
+        - $ref: '#/components/schemas/PersonBaseDto'
+        - type: object
+          required: [customerId, password, status]
+          properties:
+            customerId:
+              type: string
+              format: uuid
+            password:
+              type: string
+              minLength: 8
+              maxLength: 120
+            status:
+              type: boolean
+    CustomerCreateRequestDto:
+      allOf:
+        - $ref: '#/components/schemas/PersonBaseDto'
+        - type: object
+          required: [password, status]
+          properties:
+            password:
+              type: string
+              minLength: 8
+              maxLength: 120
+            status:
+              type: boolean
+    CustomerUpdateRequestDto:
+      allOf:
+        - $ref: '#/components/schemas/PersonBaseDto'
+        - type: object
+          required: [password, status]
+          properties:
+            password:
+              type: string
+              minLength: 8
+              maxLength: 120
+            status:
+              type: boolean
+    CustomerPatchRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        gender:
+          type: string
+          enum: [MALE, FEMALE, OTHER]
+        age:
+          type: integer
+          minimum: 0
+          maximum: 130
+        identification:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+          maxLength: 180
+        phone:
+          type: string
+          maxLength: 20
+        password:
+          type: string
+          minLength: 8
+          maxLength: 120
+        status:
+          type: boolean
     AccountDto:
       type: object
       required: [accountId, clientId, accountNumber, accountType, initialBalance, status]
@@ -243,6 +626,75 @@ components:
           enum: [SAVINGS, CURRENT]
         status:
           type: boolean
+    MovementDto:
+      type: object
+      required: [movementId, accountId, movementDate, movementType, amount, balance, status]
+      properties:
+        movementId:
+          type: string
+          format: uuid
+        accountId:
+          type: string
+          format: uuid
+        movementDate:
+          type: string
+          format: date-time
+        movementType:
+          type: string
+          enum: [DEPOSIT, WITHDRAWAL]
+        amount:
+          type: number
+          format: double
+        balance:
+          type: number
+          format: double
+        status:
+          type: boolean
+    MovementCreateRequestDto:
+      type: object
+      required: [accountId, movementDate, movementType, amount]
+      properties:
+        accountId:
+          type: string
+          format: uuid
+        movementDate:
+          type: string
+          format: date-time
+        movementType:
+          type: string
+          enum: [DEPOSIT, WITHDRAWAL]
+        amount:
+          type: number
+          format: double
+    MovementUpdateRequestDto:
+      type: object
+      required: [movementDate, movementType, amount, status]
+      properties:
+        movementDate:
+          type: string
+          format: date-time
+        movementType:
+          type: string
+          enum: [DEPOSIT, WITHDRAWAL]
+        amount:
+          type: number
+          format: double
+        status:
+          type: boolean
+    MovementPatchRequestDto:
+      type: object
+      properties:
+        movementDate:
+          type: string
+          format: date-time
+        movementType:
+          type: string
+          enum: [DEPOSIT, WITHDRAWAL]
+        amount:
+          type: number
+          format: double
+        status:
+          type: boolean
     ErrorModelDto:
       type: object
       required: [title, detail, instance, type]
@@ -266,10 +718,10 @@ components:
         type:
           type: string
           maxLength: 100
-          example: /current-account/v1/accounts
+          example: /api/v1
         resource:
           type: string
-          example: AccountsController/createAccount
+          example: Controller/Method
         component:
           type: string
           example: TX-ACC-001
@@ -281,10 +733,10 @@ components:
       properties:
         code:
           type: string
-          example: ACC-001
+          example: ERR-001
         message:
           type: string
           example: Technical validation error
         businessMessage:
           type: string
-          example: Account number already exists
+          example: Error detail

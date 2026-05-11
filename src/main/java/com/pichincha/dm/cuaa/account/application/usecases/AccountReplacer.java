@@ -7,6 +7,8 @@ import com.pichincha.dm.cuaa.account.application.usecases.ports.output.ReplaceAc
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+
 @UseCaseService
 @RequiredArgsConstructor
 public class AccountReplacer implements ReplaceAccountInputPort {
@@ -14,7 +16,7 @@ public class AccountReplacer implements ReplaceAccountInputPort {
     private final ReplaceAccountOutputPort accountPersistence;
 
     @Override
-    public Mono<Void> replaceAccount(String accountId, Account account) {
+    public Mono<Void> replaceAccount(AccountId accountId, Account account) {
         return accountPersistence.update(accountId, account);
     }
 }

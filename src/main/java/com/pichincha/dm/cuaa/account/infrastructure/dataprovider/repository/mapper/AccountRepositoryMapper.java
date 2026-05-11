@@ -2,7 +2,7 @@ package com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.map
 
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
-import com.pichincha.dm.cuaa.account.domain.entities.identifiers.ClientId;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.AccountNumber;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.AccountType;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.InitialBalance;
@@ -22,7 +22,7 @@ public interface AccountRepositoryMapper {
 
 	// Account (domain) → AccountEntity (infrastructure: raw primitives for DB)
 	@Mapping(target = "accountId",      source = "accountId",      qualifiedByName = "fromAccountIdToString")
-	@Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "fromClientIdToString")
+	@Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "fromCustomerIdToString")
 	@Mapping(target = "accountNumber",  source = "accountNumber",  qualifiedByName = "fromValueObjectToString")
 	@Mapping(target = "accountType",    source = "accountType",    qualifiedByName = "fromValueObjectToString")
 	@Mapping(target = "initialBalance", source = "initialBalance", qualifiedByName = "fromValueObjectToDouble")
@@ -31,7 +31,7 @@ public interface AccountRepositoryMapper {
 
 	// AccountEntity (infrastructure: raw primitives) → Account (domain)
 	@Mapping(target = "accountId",      source = "accountId",      qualifiedByName = "toAccountId")
-	@Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "toClientId")
+	@Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "toCustomerId")
 	@Mapping(target = "accountNumber",  source = "accountNumber",  qualifiedByName = "toAccountNumber")
 	@Mapping(target = "accountType",    source = "accountType",    qualifiedByName = "toAccountType")
 	@Mapping(target = "initialBalance", source = "initialBalance", qualifiedByName = "toInitialBalance")
@@ -45,8 +45,8 @@ public interface AccountRepositoryMapper {
 		return accountId == null ? null : accountId.getValue();
 	}
 
-	@Named("fromClientIdToString")
-	default String fromClientIdToString(ClientId clientId) {
+	@Named("fromCustomerIdToString")
+	default String fromCustomerIdToString(CustomerId clientId) {
 		return clientId == null ? null : clientId.getValue();
 	}
 
@@ -72,9 +72,9 @@ public interface AccountRepositoryMapper {
 		return accountId == null ? null : new AccountId(accountId);
 	}
 
-	@Named("toClientId")
-	default ClientId toClientId(String clientId) {
-		return clientId == null ? null : new ClientId(clientId);
+	@Named("toCustomerId")
+	default CustomerId toCustomerId(String clientId) {
+		return clientId == null ? null : new CustomerId(clientId);
 	}
 
 	@Named("toAccountNumber")

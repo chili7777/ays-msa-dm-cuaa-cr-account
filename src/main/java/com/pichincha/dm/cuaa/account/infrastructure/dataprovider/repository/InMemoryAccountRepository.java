@@ -1,14 +1,18 @@
 package com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository;
 
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.*;
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
-import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateAccountOutputPort;
-import com.pichincha.dm.cuaa.account.application.usecases.ports.output.DeleteAccountOutputPort;
-import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetAccountByIdOutputPort;
-import com.pichincha.dm.cuaa.account.application.usecases.ports.output.ListAccountsOutputPort;
-import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchAccountOutputPort;
-import com.pichincha.dm.cuaa.account.application.usecases.ports.output.ReplaceAccountOutputPort;
+import com.pichincha.dm.cuaa.account.domain.entities.Customer;
+import com.pichincha.dm.cuaa.account.domain.entities.Movement;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.AccountEntity;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.CustomerEntity;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.MovementEntity;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.mapper.AccountRepositoryMapper;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.mapper.CustomerRepositoryMapper;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.mapper.MovementRepositoryMapper;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -20,84 +24,200 @@ import reactor.core.publisher.Mono;
 @Repository
 @Profile({"test", "local", "default", "development", "staging", "production"})
 @RequiredArgsConstructor
-public final class InMemoryAccountRepository implements CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort {
+public final class InMemoryAccountRepository implements
+        CreateCustomerOutputPort, ListCustomersOutputPort, GetCustomerByIdOutputPort, ReplaceCustomerOutputPort, PatchCustomerOutputPort, DeleteCustomerOutputPort,
+        CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort,
+        CreateMovementOutputPort, ListMovementsOutputPort, GetMovementByIdOutputPort, ReplaceMovementOutputPort, PatchMovementOutputPort, DeleteMovementOutputPort {
 
-    private final AccountRepositoryMapper accountRepositoryMapper;
+    private final CustomerRepositoryMapper customerMapper;
+    private final AccountRepositoryMapper accountMapper;
+    private final MovementRepositoryMapper movementMapper;
+
+    private final Map<String, CustomerEntity> customers = new HashMap<>();
     private final Map<String, AccountEntity> accounts = new HashMap<>();
+    private final Map<String, MovementEntity> movements = new HashMap<>();
 
+    // --- Customer Implementation ---
+    @Override
+    public Mono<Void> save(Customer customer) {
+        return Mono.fromRunnable(() -> {
+            CustomerEntity entity = customerMapper.toCustomerEntity(customer);
+            customers.put(entity.id(), entity);
+        });
+    }
+
+    @Override
+    public Flux<Customer> findAll() {
+        return Flux.fromIterable(customers.values()).map(customerMapper::toCustomer);
+    }
+
+    @Override
+    public Mono<Customer> findById(CustomerId customerId) {
+        return Mono.justOrEmpty(customers.get(customerId.getValue())).map(customerMapper::toCustomer);
+    }
+
+    @Override
+    public Mono<Void> update(CustomerId customerId, Customer customer) {
+        return Mono.fromRunnable(() -> {
+            if (customers.containsKey(customerId.getValue())) {
+                CustomerEntity entity = customerMapper.toCustomerEntity(customer);
+                customers.put(customerId.getValue(), entity);
+            }
+        });
+    }
+
+    @Override
+    public Mono<Void> patch(CustomerId customerId, Customer customer) {
+        return Mono.fromRunnable(() -> {
+            CustomerEntity existing = customers.get(customerId.getValue());
+            if (existing != null) {
+                CustomerEntity updated = new CustomerEntity(
+                        existing.id(),
+                        customer.identification() != null ? customer.identification().getValue() : existing.identification(),
+                        customer.fullName() != null ? customer.fullName().getValue() : existing.fullName(),
+                        customer.email() != null ? customer.email().getValue() : existing.email(),
+                        customer.phone() != null ? customer.phone().getValue() : existing.phone(),
+                        customer.address() != null ? customer.address().getValue() : existing.address(),
+                        customer.status() != null ? customer.status().getValue() : existing.status()
+                );
+                customers.put(customerId.getValue(), updated);
+            }
+        });
+    }
+
+    @Override
+    public Mono<Void> deactivate(CustomerId customerId) {
+        return Mono.fromRunnable(() -> {
+            CustomerEntity existing = customers.get(customerId.getValue());
+            if (existing != null) {
+                CustomerEntity deactivated = new CustomerEntity(
+                        existing.id(), existing.identification(), existing.fullName(), existing.email(),
+                        existing.phone(), existing.address(), false);
+                customers.put(customerId.getValue(), deactivated);
+
+                accounts.values().stream()
+                    .filter(a -> a.clientId().equals(customerId.getValue()))
+                    .forEach(a -> deactivate(new AccountId(a.accountId())).subscribe());
+            }
+        });
+    }
+
+    // --- Account Implementation ---
     @Override
     public Mono<Void> save(Account account) {
-        return Mono.fromRunnable(() -> {
-            AccountEntity accountEntity = accountRepositoryMapper.toAccountEntity(account);
-            accounts.put(accountEntity.accountId(), accountEntity);
+        return Mono.defer(() -> {
+            if (!customers.containsKey(account.clientId().getValue())) {
+                return Mono.error(new IllegalArgumentException("Customer does not exist"));
+            }
+            AccountEntity entity = accountMapper.toAccountEntity(account);
+            accounts.put(entity.accountId(), entity);
+            return Mono.empty();
         });
     }
 
     @Override
-    public Flux<Account> findAll(String clientId, Boolean status) {
-        return Flux.fromIterable(accounts.values())
-                .filter(entity -> clientId == null || entity.clientId().equals(clientId))
-                .filter(entity -> status == null || entity.status().equals(status))
-                .map(accountRepositoryMapper::toAccount);
+    public Flux<Account> findAll() {
+        return Flux.fromIterable(accounts.values()).map(accountMapper::toAccount);
     }
 
     @Override
-    public Mono<Account> findById(String accountId) {
-        return Mono.justOrEmpty(accounts.get(accountId))
-                .map(accountRepositoryMapper::toAccount);
+    public Mono<Account> findById(AccountId accountId) {
+        return Mono.justOrEmpty(accounts.get(accountId.getValue())).map(accountMapper::toAccount);
     }
 
     @Override
-    public Mono<Void> update(String accountId, Account account) {
+    public Mono<Void> update(AccountId accountId, Account account) {
         return Mono.fromRunnable(() -> {
-            AccountEntity existing = accounts.get(accountId);
+            if (accounts.containsKey(accountId.getValue())) {
+                AccountEntity entity = accountMapper.toAccountEntity(account);
+                accounts.put(accountId.getValue(), entity);
+            }
+        });
+    }
+
+    @Override
+    public Mono<Void> patch(AccountId accountId, Account account) {
+        return Mono.fromRunnable(() -> {
+            AccountEntity existing = accounts.get(accountId.getValue());
             if (existing != null) {
                 AccountEntity updated = new AccountEntity(
                         existing.accountId(),
-                        account.clientId() != null ? account.clientId().getValue() : existing.clientId(),
-                        account.accountNumber() != null ? account.accountNumber().getValue() : existing.accountNumber(),
+                        existing.clientId(),
+                        existing.accountNumber(),
                         account.accountType() != null ? account.accountType().getValue() : existing.accountType(),
-                        account.initialBalance() != null ? account.initialBalance().getValue() : existing.initialBalance(),
+                        existing.initialBalance(),
                         account.status() != null ? account.status().getValue() : existing.status()
                 );
-                accounts.put(accountId, updated);
+                accounts.put(accountId.getValue(), updated);
             }
         });
     }
 
     @Override
-    public Mono<Void> patch(String accountId, Account partialAccount) {
+    public Mono<Void> deactivate(AccountId accountId) {
         return Mono.fromRunnable(() -> {
-            AccountEntity existing = accounts.get(accountId);
-            if (existing != null) {
-                AccountEntity updated = new AccountEntity(
-                        existing.accountId(),
-                        existing.clientId(),
-                        existing.accountNumber(),
-                        partialAccount.accountType() != null ? partialAccount.accountType().getValue() : existing.accountType(),
-                        existing.initialBalance(),
-                        partialAccount.status() != null ? partialAccount.status().getValue() : existing.status()
-                );
-                accounts.put(accountId, updated);
-            }
-        });
-    }
-
-    @Override
-    public Mono<Void> deactivate(String accountId) {
-        return Mono.fromRunnable(() -> {
-            AccountEntity existing = accounts.get(accountId);
+            AccountEntity existing = accounts.get(accountId.getValue());
             if (existing != null) {
                 AccountEntity deactivated = new AccountEntity(
-                        existing.accountId(),
-                        existing.clientId(),
-                        existing.accountNumber(),
-                        existing.accountType(),
-                        existing.initialBalance(),
-                        false
-                );
-                accounts.put(accountId, deactivated);
+                        existing.accountId(), existing.clientId(), existing.accountNumber(),
+                        existing.accountType(), existing.initialBalance(), false);
+                accounts.put(accountId.getValue(), deactivated);
             }
         });
+    }
+
+    // --- Movement Implementation ---
+    @Override
+    public Mono<Void> save(Movement movement) {
+        return Mono.defer(() -> {
+            if (!accounts.containsKey(movement.accountId().getValue())) {
+                return Mono.error(new IllegalArgumentException("Account does not exist"));
+            }
+            MovementEntity entity = movementMapper.toMovementEntity(movement);
+            movements.put(entity.movementId(), entity);
+            return Mono.empty();
+        });
+    }
+
+    @Override
+    public Flux<Movement> findAll() {
+        return Flux.fromIterable(movements.values()).map(movementMapper::toMovement);
+    }
+
+    @Override
+    public Mono<Movement> findById(MovementId movementId) {
+        return Mono.justOrEmpty(movements.get(movementId.getValue())).map(movementMapper::toMovement);
+    }
+
+    @Override
+    public Mono<Void> update(MovementId movementId, Movement movement) {
+        return Mono.fromRunnable(() -> {
+            if (movements.containsKey(movementId.getValue())) {
+                MovementEntity entity = movementMapper.toMovementEntity(movement);
+                movements.put(movementId.getValue(), entity);
+            }
+        });
+    }
+
+    @Override
+    public Mono<Void> patch(MovementId movementId, Movement movement) {
+        return Mono.fromRunnable(() -> {
+            MovementEntity existing = movements.get(movementId.getValue());
+            if (existing != null) {
+                MovementEntity updated = new MovementEntity(
+                        existing.movementId(),
+                        existing.accountId(),
+                        movement.movementDate() != null ? movement.movementDate().getValue() : existing.movementDate(),
+                        movement.movementType() != null ? movement.movementType().getValue() : existing.movementType(),
+                        movement.amount() != null ? movement.amount().getValue() : existing.amount()
+                );
+                movements.put(movementId.getValue(), updated);
+            }
+        });
+    }
+
+    @Override
+    public Mono<Void> deactivate(MovementId movementId) {
+        return Mono.fromRunnable(() -> movements.remove(movementId.getValue()));
     }
 }

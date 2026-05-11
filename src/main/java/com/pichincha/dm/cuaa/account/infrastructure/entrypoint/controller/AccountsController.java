@@ -20,6 +20,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+
 @RestController
 @RequiredArgsConstructor
 public class AccountsController implements AccountsApi {
@@ -52,7 +54,7 @@ public class AccountsController implements AccountsApi {
 															   Boolean status,
 															   ServerWebExchange exchange) {
 		return Mono.just(ResponseEntity.ok(
-				listAccountsUseCase.listAccounts(clientId != null ? clientId.toString() : null, status)
+				listAccountsUseCase.listAccounts()
 						.map(accountHttpRequestMapper::toAccountDto)));
 	}
 
@@ -61,7 +63,7 @@ public class AccountsController implements AccountsApi {
 														  String xApp,
 														  UUID accountId,
 														  ServerWebExchange exchange) {
-		return getAccountByIdUseCase.getAccountById(accountId.toString())
+		return getAccountByIdUseCase.getAccountById(new AccountId(accountId.toString()))
 				.map(accountHttpRequestMapper::toAccountDto)
 				.map(ResponseEntity::ok);
 	}
@@ -74,7 +76,7 @@ public class AccountsController implements AccountsApi {
 													ServerWebExchange exchange) {
 		return accountUpdateRequestDto
 				.map(accountHttpRequestMapper::toAccount)
-				.flatMap(account -> replaceAccountUseCase.replaceAccount(accountId.toString(), account))
+				.flatMap(account -> replaceAccountUseCase.replaceAccount(new AccountId(accountId.toString()), account))
 				.thenReturn(NO_CONTENT_RESPONSE);
 	}
 
@@ -86,7 +88,7 @@ public class AccountsController implements AccountsApi {
 												  ServerWebExchange exchange) {
 		return accountPatchRequestDto
 				.map(accountHttpRequestMapper::toAccount)
-				.flatMap(account -> patchAccountUseCase.patchAccount(accountId.toString(), account))
+				.flatMap(account -> patchAccountUseCase.patchAccount(new AccountId(accountId.toString()), account))
 				.thenReturn(NO_CONTENT_RESPONSE);
 	}
 
@@ -95,7 +97,7 @@ public class AccountsController implements AccountsApi {
 												   String xApp,
 												   UUID accountId,
 												   ServerWebExchange exchange) {
-		return deleteAccountUseCase.deleteAccount(accountId.toString())
+		return deleteAccountUseCase.deleteAccount(new AccountId(accountId.toString()))
 				.thenReturn(NO_CONTENT_RESPONSE);
 	}
 }

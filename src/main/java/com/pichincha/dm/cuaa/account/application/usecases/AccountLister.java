@@ -14,7 +14,7 @@ public class AccountLister implements ListAccountsInputPort {
     private final ListAccountsOutputPort accountPersistence;
 
     @Override
-    public Flux<Account> listAccounts(String clientId, Boolean status) {
-        return accountPersistence.findAll(clientId, status);
+    public Flux<Account> listAccounts() {
+        return accountPersistence.findAll();
     }
 }

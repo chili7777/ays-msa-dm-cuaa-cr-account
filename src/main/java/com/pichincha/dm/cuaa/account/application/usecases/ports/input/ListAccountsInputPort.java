@@ -4,5 +4,5 @@ import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import reactor.core.publisher.Flux;
 
 public interface ListAccountsInputPort {
-    Flux<Account> listAccounts(String clientId, Boolean status);
+    Flux<Account> listAccounts();
 }

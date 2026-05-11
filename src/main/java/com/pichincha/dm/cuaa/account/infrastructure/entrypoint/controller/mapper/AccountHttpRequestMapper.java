@@ -2,7 +2,7 @@ package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mappe
 
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
-import com.pichincha.dm.cuaa.account.domain.entities.identifiers.ClientId;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.AccountNumber;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.AccountType;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.InitialBalance;
@@ -24,7 +24,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface AccountHttpRequestMapper {
 
     @Mapping(target = "accountId",      source = "accountId",      qualifiedByName = "toAccountId")
-    @Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "toClientId")
+    @Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "toCustomerId")
     @Mapping(target = "accountNumber",  source = "accountNumber",  qualifiedByName = "toAccountNumber")
     @Mapping(target = "accountType",    source = "accountType",    qualifiedByName = "toAccountType")
     @Mapping(target = "initialBalance", source = "initialBalance", qualifiedByName = "toInitialBalance")
@@ -36,9 +36,9 @@ public interface AccountHttpRequestMapper {
         return accountId == null ? null : new AccountId(accountId.toString());
     }
 
-    @Named("toClientId")
-    default ClientId toClientId(java.util.UUID clientIdUuid) {
-        return clientIdUuid == null ? null : new ClientId(clientIdUuid.toString());
+    @Named("toCustomerId")
+    default CustomerId toCustomerId(java.util.UUID clientIdUuid) {
+        return clientIdUuid == null ? null : new CustomerId(clientIdUuid.toString());
     }
 
     @Named("toAccountNumber")
@@ -88,7 +88,7 @@ public interface AccountHttpRequestMapper {
     }
 
     @Mapping(target = "accountId",      source = "accountId",      qualifiedByName = "fromAccountIdToUuid")
-    @Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "fromClientIdToUuid")
+    @Mapping(target = "clientId",       source = "clientId",       qualifiedByName = "fromCustomerIdToUuid")
     @Mapping(target = "accountNumber",  source = "accountNumber",  qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "accountType",    source = "accountType",    qualifiedByName = "fromAccountTypeToEnum")
     @Mapping(target = "initialBalance", source = "initialBalance", qualifiedByName = "fromValueObjectToDouble")
@@ -100,8 +100,8 @@ public interface AccountHttpRequestMapper {
         return accountId == null ? null : java.util.UUID.fromString(accountId.getValue());
     }
 
-    @Named("fromClientIdToUuid")
-    default java.util.UUID fromClientIdToUuid(ClientId clientId) {
+    @Named("fromCustomerIdToUuid")
+    default java.util.UUID fromCustomerIdToUuid(CustomerId clientId) {
         return clientId == null ? null : java.util.UUID.fromString(clientId.getValue());
     }
 

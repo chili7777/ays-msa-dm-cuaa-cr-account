@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+
 @Repository
 @Profile("!test & !local & !default & !development & !staging & !production")
 public class AccountRepository implements CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort {
@@ -23,27 +25,27 @@ public class AccountRepository implements CreateAccountOutputPort, ListAccountsO
     }
 
     @Override
-    public Flux<Account> findAll(String clientId, Boolean status) {
+    public Flux<Account> findAll() {
         return Flux.empty();
     }
 
     @Override
-    public Mono<Account> findById(String accountId) {
+    public Mono<Account> findById(AccountId accountId) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> update(String accountId, Account account) {
+    public Mono<Void> update(AccountId accountId, Account account) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> patch(String accountId, Account account) {
+    public Mono<Void> patch(AccountId accountId, Account account) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> deactivate(String accountId) {
+    public Mono<Void> deactivate(AccountId accountId) {
         return Mono.empty();
     }
 }
