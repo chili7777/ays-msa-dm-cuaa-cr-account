@@ -135,6 +135,28 @@ paths:
           description: Customer deactivated
         '404':
           $ref: '#/components/responses/NotFound'
+  /customers/{customerId}/accounts:
+    get:
+      operationId: listAccountsByCustomer
+      tags: [Accounts]
+      summary: List accounts by customer
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CustomerIdPath'
+      responses:
+        '200':
+          description: Account list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /accounts:
     get:
       operationId: listAccounts
@@ -258,6 +280,28 @@ paths:
           description: Account deactivated
         '404':
           $ref: '#/components/responses/NotFound'
+  /accounts/{accountId}/movements:
+    get:
+      operationId: listMovementsByAccount
+      tags: [Movements]
+      summary: List movements by account
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/AccountIdPath'
+      responses:
+        '200':
+          description: Movement list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovementDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /movements:
     get:
       operationId: listMovements
