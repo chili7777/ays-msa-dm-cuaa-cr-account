@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 
 @Repository
 @Profile("!test & !local & !default & !development & !staging & !production")
@@ -26,6 +27,11 @@ public class AccountRepository implements CreateAccountOutputPort, ListAccountsO
 
     @Override
     public Flux<Account> findAllAccounts() {
+        return Flux.empty();
+    }
+
+    @Override
+    public Flux<Account> findAccountsByCustomerId(CustomerId customerId) {
         return Flux.empty();
     }
 
