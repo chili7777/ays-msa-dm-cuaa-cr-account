@@ -246,6 +246,15 @@ public final class InMemoryAccountRepository implements
     }
 
     @Override
+    public Flux<Movement> findMovementsByCustomerAndAccountId(CustomerId customerId, AccountId accountId) {
+        AccountEntity account = accounts.get(accountId.getValue());
+        if (account != null && account.clientId().equals(customerId.getValue())) {
+            return findMovementsByAccountId(accountId);
+        }
+        return Flux.empty();
+    }
+
+    @Override
     public Mono<Movement> findById(MovementId movementId) {
         return Mono.justOrEmpty(movements.get(movementId.getValue())).map(movementMapper::toMovement);
     }

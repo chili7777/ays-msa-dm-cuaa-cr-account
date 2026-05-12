@@ -5,6 +5,7 @@ import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateAcc
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.DeleteAccountOutputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetAccountByIdOutputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.ListAccountsOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.ListMovementsOutputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchAccountOutputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.ReplaceAccountOutputPort;
 import org.springframework.context.annotation.Profile;
@@ -14,10 +15,26 @@ import reactor.core.publisher.Mono;
 
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
+import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 
 @Repository
 @Profile("!test & !local & !default & !development & !staging & !production")
-public class AccountRepository implements CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort {
+public class AccountRepository implements CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort, ListMovementsOutputPort {
+
+    @Override
+    public Flux<Movement> findAllMovements() {
+        return Flux.empty();
+    }
+
+    @Override
+    public Flux<Movement> findMovementsByAccountId(AccountId accountId) {
+        return Flux.empty();
+    }
+
+    @Override
+    public Flux<Movement> findMovementsByCustomerAndAccountId(CustomerId customerId, AccountId accountId) {
+        return Flux.empty();
+    }
 
     @Override
     public Mono<Void> save(Account account) {
