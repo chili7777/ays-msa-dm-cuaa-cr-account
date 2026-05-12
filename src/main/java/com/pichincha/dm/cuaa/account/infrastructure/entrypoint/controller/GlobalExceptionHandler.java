@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.reactive.resource.NoResourceFoundException;
 import org.springframework.web.server.ServerWebInputException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,6 +75,13 @@ public class GlobalExceptionHandler {
         ErrorModelDto error = new ErrorModelDto("Bad Request", "Invalid input: " + ex.getReason(), "N/A", "/api/v1");
         error.setComponent("TX-ACC-001");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorModelDto> handleNoResourceFoundException(NoResourceFoundException ex) {
+        ErrorModelDto error = new ErrorModelDto("Not Found", "The requested resource was not found", "N/A", "/api/v1");
+        error.setComponent("TX-ACC-001");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(Exception.class)
