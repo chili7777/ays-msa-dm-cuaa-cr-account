@@ -4,13 +4,16 @@ import com.pichincha.dm.cuaa.account.application.usecases.ports.input.CreateAcco
 import com.pichincha.dm.cuaa.account.application.usecases.ports.input.DeleteAccountInputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.input.GetAccountByIdInputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.input.ListAccountsInputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.input.ListMovementsByAccountInputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.input.PatchAccountInputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.input.ReplaceAccountInputPort;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountCreateRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountPatchRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountUpdateRequestDto;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.MovementDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.AccountHttpRequestMapper;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.MovementHttpRequestMapper;
 import com.pichincha.dm.cuaa.account.domain.entities.ResourceNotFoundException;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import java.util.UUID;
@@ -36,7 +39,9 @@ public class AccountsController implements AccountsApi {
 	private final ReplaceAccountInputPort replaceAccountUseCase;
 	private final PatchAccountInputPort patchAccountUseCase;
 	private final DeleteAccountInputPort deleteAccountUseCase;
+	private final ListMovementsByAccountInputPort listMovementsByAccountUseCase;
 	private final AccountHttpRequestMapper accountHttpRequestMapper;
+	private final MovementHttpRequestMapper movementHttpRequestMapper;
 
 	@Override
 	public Mono<ResponseEntity<Void>> createAccount(UUID xGuid,
@@ -58,6 +63,16 @@ public class AccountsController implements AccountsApi {
 		return Mono.just(ResponseEntity.ok(
 				listAccountsUseCase.listAccounts()
 						.map(accountHttpRequestMapper::toAccountDto)));
+	}
+
+	@Override
+	public Mono<ResponseEntity<Flux<MovementDto>>> listMovementsByAccount(UUID xGuid,
+																		  String xApp,
+																		  UUID accountId,
+																		  ServerWebExchange exchange) {
+		return Mono.just(ResponseEntity.ok(
+				listMovementsByAccountUseCase.listMovementsByAccount(new AccountId(accountId.toString()))
+						.map(movementHttpRequestMapper::toMovementDto)));
 	}
 
 	@Override

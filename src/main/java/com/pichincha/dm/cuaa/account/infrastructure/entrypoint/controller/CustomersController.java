@@ -4,6 +4,7 @@ import com.pichincha.dm.cuaa.account.application.usecases.ports.input.*;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import com.pichincha.dm.cuaa.account.domain.entities.ResourceNotFoundException;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.*;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.AccountHttpRequestMapper;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.CustomerHttpRequestMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,9 @@ public class CustomersController implements CustomersApi {
     private final ReplaceCustomerInputPort replaceCustomerUseCase;
     private final PatchCustomerInputPort patchCustomerUseCase;
     private final DeleteCustomerInputPort deleteCustomerUseCase;
+    private final ListAccountsByCustomerInputPort listAccountsByCustomerUseCase;
     private final CustomerHttpRequestMapper customerMapper;
+    private final AccountHttpRequestMapper accountMapper;
 
     @Override
     public Mono<ResponseEntity<Void>> createCustomer(UUID xGuid, String xApp, Mono<CustomerCreateRequestDto> customerCreateRequestDto, ServerWebExchange exchange) {
@@ -60,6 +63,13 @@ public class CustomersController implements CustomersApi {
         return Mono.just(ResponseEntity.ok(
                 listCustomersUseCase.listCustomers()
                         .map(customerMapper::toCustomerDto)));
+    }
+
+    @Override
+    public Mono<ResponseEntity<Flux<AccountDto>>> listAccountsByCustomer(UUID xGuid, String xApp, UUID customerId, ServerWebExchange exchange) {
+        return Mono.just(ResponseEntity.ok(
+                listAccountsByCustomerUseCase.listAccountsByCustomer(new CustomerId(customerId.toString()))
+                        .map(accountMapper::toAccountDto)));
     }
 
     @Override
