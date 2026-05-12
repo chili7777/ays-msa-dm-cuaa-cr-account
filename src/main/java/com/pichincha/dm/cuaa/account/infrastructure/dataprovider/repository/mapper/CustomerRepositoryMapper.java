@@ -3,9 +3,12 @@ package com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.map
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Address;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Age;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Email;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.FullName;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Gender;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Identification;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Password;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Phone;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.ValueObject;
@@ -24,18 +27,24 @@ public interface CustomerRepositoryMapper {
     @Mapping(target = "id", source = "id", qualifiedByName = "fromCustomerIdToString")
     @Mapping(target = "identification", source = "identification", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "fullName", source = "fullName", qualifiedByName = "fromValueObjectToString")
+    @Mapping(target = "gender", source = "gender", qualifiedByName = "fromValueObjectToString")
+    @Mapping(target = "age", source = "age", qualifiedByName = "fromValueObjectToInteger")
     @Mapping(target = "email", source = "email", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "phone", source = "phone", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "address", source = "address", qualifiedByName = "fromValueObjectToString")
+    @Mapping(target = "password", source = "password", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "status", source = "status", qualifiedByName = "fromValueObjectToBoolean")
     CustomerEntity toCustomerEntity(Customer customer);
 
     @Mapping(target = "id", source = "id", qualifiedByName = "toCustomerId")
     @Mapping(target = "identification", source = "identification", qualifiedByName = "toIdentification")
     @Mapping(target = "fullName", source = "fullName", qualifiedByName = "toFullName")
+    @Mapping(target = "gender", source = "gender", qualifiedByName = "toGender")
+    @Mapping(target = "age", source = "age", qualifiedByName = "toAge")
     @Mapping(target = "email", source = "email", qualifiedByName = "toEmail")
     @Mapping(target = "phone", source = "phone", qualifiedByName = "toPhone")
     @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
+    @Mapping(target = "password", source = "password", qualifiedByName = "toPassword")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
     Customer toCustomer(CustomerEntity customerEntity);
 
@@ -54,6 +63,11 @@ public interface CustomerRepositoryMapper {
         return valueObject == null ? null : valueObject.getValue();
     }
 
+    @Named("fromValueObjectToInteger")
+    default Integer fromValueObjectToInteger(ValueObject<Integer> valueObject) {
+        return valueObject == null ? null : valueObject.getValue();
+    }
+
     @Named("toCustomerId")
     default CustomerId toCustomerId(String id) {
         return id == null ? null : new CustomerId(id);
@@ -62,6 +76,16 @@ public interface CustomerRepositoryMapper {
     @Named("toIdentification")
     default Identification toIdentification(String identification) {
         return identification == null ? null : new Identification(identification);
+    }
+
+    @Named("toGender")
+    default Gender toGender(String gender) {
+        return gender == null ? null : new Gender(gender);
+    }
+
+    @Named("toAge")
+    default Age toAge(Integer age) {
+        return age == null ? null : new Age(age);
     }
 
     @Named("toFullName")
@@ -82,6 +106,11 @@ public interface CustomerRepositoryMapper {
     @Named("toAddress")
     default Address toAddress(String address) {
         return address == null ? null : new Address(address);
+    }
+
+    @Named("toPassword")
+    default Password toPassword(String password) {
+        return password == null ? null : new Password(password);
     }
 
     @Named("toStatus")

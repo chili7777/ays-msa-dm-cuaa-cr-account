@@ -4,8 +4,10 @@ import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Amount;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Balance;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementDate;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementType;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.ValueObject;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.MovementCreateRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.MovementDto;
@@ -31,6 +33,8 @@ public interface MovementHttpRequestMapper {
     @Mapping(target = "movementDate", source = "movementDate", qualifiedByName = "toMovementDate")
     @Mapping(target = "movementType", source = "movementType", qualifiedByName = "toMovementType")
     @Mapping(target = "amount", source = "amount", qualifiedByName = "toAmount")
+    @Mapping(target = "balance", ignore = true)
+    @Mapping(target = "status", ignore = true)
     Movement toMovement(MovementCreateRequestDto dto);
 
     @Mapping(target = "movementId", ignore = true)
@@ -38,6 +42,8 @@ public interface MovementHttpRequestMapper {
     @Mapping(target = "movementDate", source = "movementDate", qualifiedByName = "toMovementDate")
     @Mapping(target = "movementType", source = "movementType", qualifiedByName = "toMovementType")
     @Mapping(target = "amount", source = "amount", qualifiedByName = "toAmount")
+    @Mapping(target = "balance", ignore = true)
+    @Mapping(target = "status", ignore = true)
     Movement toMovement(MovementUpdateRequestDto dto);
 
     @Mapping(target = "movementId", ignore = true)
@@ -45,6 +51,8 @@ public interface MovementHttpRequestMapper {
     @Mapping(target = "movementDate", source = "movementDate", qualifiedByName = "toMovementDate")
     @Mapping(target = "movementType", source = "movementType", qualifiedByName = "toMovementType")
     @Mapping(target = "amount", source = "amount", qualifiedByName = "toAmount")
+    @Mapping(target = "balance", ignore = true)
+    @Mapping(target = "status", ignore = true)
     Movement toMovement(MovementPatchRequestDto dto);
 
     @Mapping(target = "movementId", source = "movementId", qualifiedByName = "fromMovementId")
@@ -52,8 +60,8 @@ public interface MovementHttpRequestMapper {
     @Mapping(target = "movementDate", source = "movementDate", qualifiedByName = "fromMovementDate")
     @Mapping(target = "movementType", source = "movementType", qualifiedByName = "fromMovementType")
     @Mapping(target = "amount", source = "amount", qualifiedByName = "fromAmount")
-    @Mapping(target = "balance", ignore = true)
-    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "balance", source = "balance", qualifiedByName = "fromBalance")
+    @Mapping(target = "status", source = "status", qualifiedByName = "fromStatus")
     MovementDto toMovementDto(Movement movement);
 
     @Named("toAccountId")
@@ -100,5 +108,15 @@ public interface MovementHttpRequestMapper {
     @Named("fromAmount")
     default Double fromAmount(Amount amount) {
         return amount == null ? null : amount.getValue();
+    }
+
+    @Named("fromBalance")
+    default Double fromBalance(Balance balance) {
+        return balance == null ? null : balance.getValue();
+    }
+
+    @Named("fromStatus")
+    default Boolean fromStatus(Status status) {
+        return status == null ? null : status.getValue();
     }
 }

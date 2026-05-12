@@ -2,9 +2,16 @@ package com.pichincha.dm.cuaa.account.application.usecases;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.input.CreateMovementInputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateMovementOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetAccountByIdOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchAccountOutputPort;
 import com.pichincha.dm.cuaa.account.domain.annotations.UseCaseService;
+import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import com.pichincha.dm.cuaa.account.domain.entities.Movement;
+import com.pichincha.dm.cuaa.account.domain.entities.ResourceNotFoundException;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Balance;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.InitialBalance;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -13,19 +20,44 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class MovementCreator implements CreateMovementInputPort {
 
-    private final CreateMovementOutputPort repository;
+    private final CreateMovementOutputPort movementRepository;
+    private final GetAccountByIdOutputPort accountRepository;
+    private final PatchAccountOutputPort accountUpdatePort;
 
     @Override
-    public Mono<Void> createMovement(Movement movement) {
-        if (movement.movementId() == null) {
-            movement = new Movement(
-                    new MovementId(UUID.randomUUID().toString()),
-                    movement.accountId(),
-                    movement.movementDate(),
-                    movement.movementType(),
-                    movement.amount()
-            );
-        }
-        return repository.save(movement);
+    public Mono<Movement> createMovement(Movement movement) {
+        return accountRepository.findById(movement.accountId())
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Account not found: " + movement.accountId().getValue())))
+                .flatMap(account -> {
+                    double currentBalance = account.initialBalance().getValue();
+                    double amount = movement.amount().getValue();
+                    double newBalanceValue = movement.movementType().getValue().equalsIgnoreCase("WITHDRAWAL")
+                            ? currentBalance - amount
+                            : currentBalance + amount;
+
+                    if (newBalanceValue < 0 && account.accountType().getValue().equalsIgnoreCase("SAVINGS")) {
+                        return Mono.error(new IllegalArgumentException("Insufficient balance for savings account"));
+                    }
+
+                    Movement movementToSave = new Movement(
+                            movement.movementId() != null ? movement.movementId() : new MovementId(UUID.randomUUID().toString()),
+                            movement.accountId(),
+                            movement.movementDate(),
+                            movement.movementType(),
+                            movement.amount(),
+                            new Balance(newBalanceValue),
+                            new Status(true)
+                    );
+
+                    Account accountToPatch = new Account(
+                            null, null, null, null,
+                            new InitialBalance(newBalanceValue),
+                            null
+                    );
+
+                    return movementRepository.save(movementToSave)
+                            .then(accountUpdatePort.patch(account.accountId(), accountToPatch))
+                            .thenReturn(movementToSave);
+                });
     }
 }

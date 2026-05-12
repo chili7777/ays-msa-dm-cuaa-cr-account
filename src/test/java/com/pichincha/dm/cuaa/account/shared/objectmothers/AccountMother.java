@@ -35,6 +35,17 @@ public final class AccountMother {
         );
     }
 
+    public static Account withId(AccountId id, CustomerId clientId) {
+        return create(
+                id,
+                clientId,
+                AccountNumberMother.random(),
+                AccountTypeMother.random(),
+                InitialBalanceMother.random(),
+                StatusMother.random()
+        );
+    }
+
     public static Account create(AccountId accountId,
                                  CustomerId clientId,
                                  AccountNumber accountNumber,
@@ -42,5 +53,21 @@ public final class AccountMother {
                                  InitialBalance initialBalance,
                                  Status status) {
         return new Account(accountId, clientId, accountNumber, accountType, initialBalance, status);
+    }
+
+    public static Account create(AccountId accountId,
+                                 CustomerId clientId,
+                                 String accountNumber,
+                                 String accountType,
+                                 Double initialBalance,
+                                 Boolean status) {
+        return new Account(
+                accountId,
+                clientId,
+                accountNumber != null ? new AccountNumber(accountNumber) : null,
+                accountType != null ? new AccountType(accountType) : null,
+                initialBalance != null ? new InitialBalance(initialBalance) : null,
+                status != null ? new Status(status) : null
+        );
     }
 }

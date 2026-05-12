@@ -95,12 +95,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomerUpdateRequestDto'
       responses:
-        '200':
+        '204':
           description: Customer updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomerDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -120,12 +116,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomerPatchRequestDto'
       responses:
-        '200':
+        '204':
           description: Customer patched
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomerDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -360,12 +352,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MovementUpdateRequestDto'
       responses:
-        '200':
+        '204':
           description: Movement updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MovementDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -385,12 +373,8 @@ paths:
             schema:
               $ref: '#/components/schemas/MovementPatchRequestDto'
       responses:
-        '200':
+        '204':
           description: Movement patched
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MovementDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':

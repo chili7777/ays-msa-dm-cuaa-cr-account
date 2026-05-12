@@ -4,8 +4,10 @@ import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Amount;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Balance;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementDate;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementType;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.ValueObject;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.MovementEntity;
 import java.time.LocalDateTime;
@@ -25,6 +27,8 @@ public interface MovementRepositoryMapper {
     @Mapping(target = "movementDate", source = "movementDate", qualifiedByName = "fromValueObjectToLocalDateTime")
     @Mapping(target = "movementType", source = "movementType", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "amount", source = "amount", qualifiedByName = "fromValueObjectToDouble")
+    @Mapping(target = "balance", source = "balance", qualifiedByName = "fromValueObjectToDouble")
+    @Mapping(target = "status", source = "status", qualifiedByName = "fromValueObjectToBoolean")
     MovementEntity toMovementEntity(Movement movement);
 
     @Mapping(target = "movementId", source = "movementId", qualifiedByName = "toMovementId")
@@ -32,6 +36,8 @@ public interface MovementRepositoryMapper {
     @Mapping(target = "movementDate", source = "movementDate", qualifiedByName = "toMovementDate")
     @Mapping(target = "movementType", source = "movementType", qualifiedByName = "toMovementType")
     @Mapping(target = "amount", source = "amount", qualifiedByName = "toAmount")
+    @Mapping(target = "balance", source = "balance", qualifiedByName = "toBalance")
+    @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
     Movement toMovement(MovementEntity movementEntity);
 
     @Named("fromMovementIdToString")
@@ -59,6 +65,11 @@ public interface MovementRepositoryMapper {
         return valueObject == null ? null : valueObject.getValue();
     }
 
+    @Named("fromValueObjectToBoolean")
+    default Boolean fromValueObjectToBoolean(ValueObject<Boolean> valueObject) {
+        return valueObject == null ? null : valueObject.getValue();
+    }
+
     @Named("toMovementId")
     default MovementId toMovementId(String movementId) {
         return movementId == null ? null : new MovementId(movementId);
@@ -82,5 +93,15 @@ public interface MovementRepositoryMapper {
     @Named("toAmount")
     default Amount toAmount(Double amount) {
         return amount == null ? null : new Amount(amount);
+    }
+
+    @Named("toBalance")
+    default Balance toBalance(Double balance) {
+        return balance == null ? null : new Balance(balance);
+    }
+
+    @Named("toStatus")
+    default Status toStatus(Boolean status) {
+        return status == null ? null : new Status(status);
     }
 }

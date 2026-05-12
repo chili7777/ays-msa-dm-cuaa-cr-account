@@ -1,9 +1,7 @@
 package com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.*;
-import com.pichincha.dm.cuaa.account.domain.entities.Account;
-import com.pichincha.dm.cuaa.account.domain.entities.Customer;
-import com.pichincha.dm.cuaa.account.domain.entities.Movement;
+import com.pichincha.dm.cuaa.account.domain.entities.*;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
@@ -37,6 +35,12 @@ public final class InMemoryAccountRepository implements
     private final Map<String, AccountEntity> accounts = new HashMap<>();
     private final Map<String, MovementEntity> movements = new HashMap<>();
 
+    public void clear() {
+        customers.clear();
+        accounts.clear();
+        movements.clear();
+    }
+
     // --- Customer Implementation ---
     @Override
     public Mono<Void> save(Customer customer) {
@@ -58,47 +62,74 @@ public final class InMemoryAccountRepository implements
 
     @Override
     public Mono<Void> update(CustomerId customerId, Customer customer) {
-        return Mono.fromRunnable(() -> {
+        return Mono.defer(() -> {
             if (customers.containsKey(customerId.getValue())) {
                 CustomerEntity entity = customerMapper.toCustomerEntity(customer);
-                customers.put(customerId.getValue(), entity);
+                CustomerEntity updated = new CustomerEntity(
+                        customerId.getValue(),
+                        entity.identification(),
+                        entity.fullName(),
+                        entity.gender(),
+                        entity.age(),
+                        entity.email(),
+                        entity.phone(),
+                        entity.address(),
+                        entity.password(),
+                        entity.status()
+                );
+                customers.put(customerId.getValue(), updated);
+                return Mono.empty();
             }
+            return Mono.error(new ResourceNotFoundException("Customer not found: " + customerId.getValue()));
         });
     }
 
     @Override
     public Mono<Void> patch(CustomerId customerId, Customer customer) {
-        return Mono.fromRunnable(() -> {
+        return Mono.defer(() -> {
             CustomerEntity existing = customers.get(customerId.getValue());
             if (existing != null) {
                 CustomerEntity updated = new CustomerEntity(
                         existing.id(),
                         customer.identification() != null ? customer.identification().getValue() : existing.identification(),
                         customer.fullName() != null ? customer.fullName().getValue() : existing.fullName(),
+                        customer.gender() != null ? customer.gender().getValue() : existing.gender(),
+                        customer.age() != null ? customer.age().getValue() : existing.age(),
                         customer.email() != null ? customer.email().getValue() : existing.email(),
                         customer.phone() != null ? customer.phone().getValue() : existing.phone(),
                         customer.address() != null ? customer.address().getValue() : existing.address(),
+                        customer.password() != null ? customer.password().getValue() : existing.password(),
                         customer.status() != null ? customer.status().getValue() : existing.status()
                 );
                 customers.put(customerId.getValue(), updated);
+                return Mono.empty();
             }
+            return Mono.error(new ResourceNotFoundException("Customer not found: " + customerId.getValue()));
         });
     }
 
     @Override
     public Mono<Void> deactivate(CustomerId customerId) {
-        return Mono.fromRunnable(() -> {
-            CustomerEntity existing = customers.get(customerId.getValue());
-            if (existing != null) {
-                CustomerEntity deactivated = new CustomerEntity(
-                        existing.id(), existing.identification(), existing.fullName(), existing.email(),
-                        existing.phone(), existing.address(), false);
-                customers.put(customerId.getValue(), deactivated);
+        return Mono.defer(() -> {
+            if (customers.containsKey(customerId.getValue())) {
+                String cid = customerId.getValue();
+                // Identificar cuentas a borrar para limpiar sus movimientos
+                java.util.List<String> accountIds = accounts.values().stream()
+                        .filter(a -> a.clientId().equals(cid))
+                        .map(AccountEntity::accountId)
+                        .toList();
 
-                accounts.values().stream()
-                    .filter(a -> a.clientId().equals(customerId.getValue()))
-                    .forEach(a -> deactivate(new AccountId(a.accountId())).subscribe());
+                // Borrar movimientos asociados a las cuentas del cliente
+                movements.values().removeIf(m -> accountIds.contains(m.accountId()));
+
+                // Borrar las cuentas del cliente
+                accounts.values().removeIf(a -> a.clientId().equals(cid));
+
+                // Borrar el cliente
+                customers.remove(cid);
+                return Mono.empty();
             }
+            return Mono.error(new ResourceNotFoundException("Customer not found: " + customerId.getValue()));
         });
     }
 
@@ -128,17 +159,28 @@ public final class InMemoryAccountRepository implements
 
     @Override
     public Mono<Void> update(AccountId accountId, Account account) {
-        return Mono.fromRunnable(() -> {
-            if (accounts.containsKey(accountId.getValue())) {
+        return Mono.defer(() -> {
+            AccountEntity existing = accounts.get(accountId.getValue());
+            if (existing != null) {
                 AccountEntity entity = accountMapper.toAccountEntity(account);
-                accounts.put(accountId.getValue(), entity);
+                AccountEntity updated = new AccountEntity(
+                        accountId.getValue(),
+                        existing.clientId(),
+                        existing.accountNumber(),
+                        entity.accountType(),
+                        existing.initialBalance(),
+                        entity.status()
+                );
+                accounts.put(accountId.getValue(), updated);
+                return Mono.empty();
             }
+            return Mono.error(new ResourceNotFoundException("Account not found: " + accountId.getValue()));
         });
     }
 
     @Override
     public Mono<Void> patch(AccountId accountId, Account account) {
-        return Mono.fromRunnable(() -> {
+        return Mono.defer(() -> {
             AccountEntity existing = accounts.get(accountId.getValue());
             if (existing != null) {
                 AccountEntity updated = new AccountEntity(
@@ -146,24 +188,28 @@ public final class InMemoryAccountRepository implements
                         existing.clientId(),
                         existing.accountNumber(),
                         account.accountType() != null ? account.accountType().getValue() : existing.accountType(),
-                        existing.initialBalance(),
+                        account.initialBalance() != null ? account.initialBalance().getValue() : existing.initialBalance(),
                         account.status() != null ? account.status().getValue() : existing.status()
                 );
                 accounts.put(accountId.getValue(), updated);
+                return Mono.empty();
             }
+            return Mono.error(new ResourceNotFoundException("Account not found: " + accountId.getValue()));
         });
     }
 
     @Override
     public Mono<Void> deactivate(AccountId accountId) {
-        return Mono.fromRunnable(() -> {
-            AccountEntity existing = accounts.get(accountId.getValue());
-            if (existing != null) {
-                AccountEntity deactivated = new AccountEntity(
-                        existing.accountId(), existing.clientId(), existing.accountNumber(),
-                        existing.accountType(), existing.initialBalance(), false);
-                accounts.put(accountId.getValue(), deactivated);
+        return Mono.defer(() -> {
+            if (accounts.containsKey(accountId.getValue())) {
+                String aid = accountId.getValue();
+                // Borrar movimientos asociados a la cuenta
+                movements.values().removeIf(m -> m.accountId().equals(aid));
+                // Borrar la cuenta
+                accounts.remove(aid);
+                return Mono.empty();
             }
+            return Mono.error(new ResourceNotFoundException("Account not found: " + accountId.getValue()));
         });
     }
 
@@ -192,17 +238,28 @@ public final class InMemoryAccountRepository implements
 
     @Override
     public Mono<Void> update(MovementId movementId, Movement movement) {
-        return Mono.fromRunnable(() -> {
-            if (movements.containsKey(movementId.getValue())) {
-                MovementEntity entity = movementMapper.toMovementEntity(movement);
-                movements.put(movementId.getValue(), entity);
+        return Mono.defer(() -> {
+            MovementEntity existing = movements.get(movementId.getValue());
+            if (existing != null) {
+                MovementEntity updated = new MovementEntity(
+                        movementId.getValue(),
+                        existing.accountId(),
+                        movement.movementDate() != null ? movement.movementDate().getValue() : existing.movementDate(),
+                        movement.movementType() != null ? movement.movementType().getValue() : existing.movementType(),
+                        movement.amount() != null ? movement.amount().getValue() : existing.amount(),
+                        movement.balance() != null ? movement.balance().getValue() : existing.balance(),
+                        movement.status() != null ? movement.status().getValue() : existing.status()
+                );
+                movements.put(movementId.getValue(), updated);
+                return Mono.empty();
             }
+            return Mono.error(new ResourceNotFoundException("Movement not found: " + movementId.getValue()));
         });
     }
 
     @Override
     public Mono<Void> patch(MovementId movementId, Movement movement) {
-        return Mono.fromRunnable(() -> {
+        return Mono.defer(() -> {
             MovementEntity existing = movements.get(movementId.getValue());
             if (existing != null) {
                 MovementEntity updated = new MovementEntity(
@@ -210,15 +267,25 @@ public final class InMemoryAccountRepository implements
                         existing.accountId(),
                         movement.movementDate() != null ? movement.movementDate().getValue() : existing.movementDate(),
                         movement.movementType() != null ? movement.movementType().getValue() : existing.movementType(),
-                        movement.amount() != null ? movement.amount().getValue() : existing.amount()
+                        movement.amount() != null ? movement.amount().getValue() : existing.amount(),
+                        movement.balance() != null ? movement.balance().getValue() : existing.balance(),
+                        movement.status() != null ? movement.status().getValue() : existing.status()
                 );
                 movements.put(movementId.getValue(), updated);
+                return Mono.empty();
             }
+            return Mono.error(new ResourceNotFoundException("Movement not found: " + movementId.getValue()));
         });
     }
 
     @Override
     public Mono<Void> deactivate(MovementId movementId) {
-        return Mono.fromRunnable(() -> movements.remove(movementId.getValue()));
+        return Mono.defer(() -> {
+            if (movements.containsKey(movementId.getValue())) {
+                movements.remove(movementId.getValue());
+                return Mono.empty();
+            }
+            return Mono.error(new ResourceNotFoundException("Movement not found: " + movementId.getValue()));
+        });
     }
 }

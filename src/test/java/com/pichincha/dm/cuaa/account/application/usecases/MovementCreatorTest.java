@@ -7,8 +7,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateMovementOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetAccountByIdOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchAccountOutputPort;
+import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import com.pichincha.dm.cuaa.account.domain.entities.Movement;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.AmountMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerIdMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.MovementDateMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.MovementMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.MovementTypeMother;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +29,10 @@ final class MovementCreatorTest {
 
     @Mock
     private CreateMovementOutputPort movementPersistence;
+    @Mock
+    private GetAccountByIdOutputPort accountRepository;
+    @Mock
+    private PatchAccountOutputPort accountUpdatePort;
 
     @InjectMocks
     private MovementCreator movementCreator;
@@ -28,12 +40,16 @@ final class MovementCreatorTest {
     @Test
     void given_validMovementData_when_createMovement_then_persistMovement() {
         Movement movement = MovementMother.random();
+        Account account = AccountMother.withId(movement.accountId(), CustomerIdMother.random());
 
-        when(movementPersistence.save(movement)).thenReturn(Mono.empty());
+        when(accountRepository.findById(movement.accountId())).thenReturn(Mono.just(account));
+        when(movementPersistence.save(any(Movement.class))).thenReturn(Mono.empty());
+        when(accountUpdatePort.patch(any(), any())).thenReturn(Mono.empty());
 
         movementCreator.createMovement(movement).block();
 
-        verify(movementPersistence, atLeastOnce()).save(movement);
+        verify(movementPersistence, atLeastOnce()).save(any(Movement.class));
+        verify(accountUpdatePort).patch(any(), any());
     }
 
     @Test
@@ -41,12 +57,17 @@ final class MovementCreatorTest {
         Movement movementWithoutId = new Movement(
                 null,
                 MovementMother.random().accountId(),
-                MovementMother.random().movementDate(),
-                MovementMother.random().movementType(),
-                MovementMother.random().amount()
+                MovementDateMother.random(),
+                MovementTypeMother.random(),
+                AmountMother.random(),
+                null,
+                null
         );
+        Account account = AccountMother.withId(movementWithoutId.accountId(), CustomerIdMother.random());
 
+        when(accountRepository.findById(movementWithoutId.accountId())).thenReturn(Mono.just(account));
         when(movementPersistence.save(any(Movement.class))).thenReturn(Mono.empty());
+        when(accountUpdatePort.patch(any(), any())).thenReturn(Mono.empty());
 
         movementCreator.createMovement(movementWithoutId).block();
 

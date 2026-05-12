@@ -4,5 +4,5 @@ import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import reactor.core.publisher.Mono;
 
 public interface CreateMovementInputPort {
-    Mono<Void> createMovement(Movement movement);
+    Mono<Movement> createMovement(Movement movement);
 }

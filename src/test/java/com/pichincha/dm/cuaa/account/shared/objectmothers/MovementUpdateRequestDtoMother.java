@@ -11,6 +11,8 @@ public final class MovementUpdateRequestDtoMother {
         MovementUpdateRequestDto dto = new MovementUpdateRequestDto();
         dto.setMovementType(FakerMother.faker().options().option(MovementUpdateRequestDto.MovementTypeEnum.values()));
         dto.setAmount(FakerMother.faker().number().randomDouble(2, 1, 1000));
+        dto.setMovementDate(java.time.OffsetDateTime.now());
+        dto.setStatus(true);
         return dto;
     }
 }

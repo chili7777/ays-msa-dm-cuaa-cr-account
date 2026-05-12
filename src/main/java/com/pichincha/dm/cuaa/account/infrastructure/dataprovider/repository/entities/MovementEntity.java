@@ -7,5 +7,7 @@ public record MovementEntity(
     String accountId,
     LocalDateTime movementDate,
     String movementType,
-    Double amount
+    Double amount,
+    Double balance,
+    Boolean status
 ) {}

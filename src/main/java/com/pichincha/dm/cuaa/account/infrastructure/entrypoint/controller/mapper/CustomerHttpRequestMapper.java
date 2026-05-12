@@ -3,9 +3,12 @@ package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mappe
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Address;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Age;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Email;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.FullName;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Gender;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Identification;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Password;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Phone;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.ValueObject;
@@ -28,40 +31,49 @@ public interface CustomerHttpRequestMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identification", source = "identification", qualifiedByName = "toIdentification")
     @Mapping(target = "fullName", source = "name", qualifiedByName = "toFullName")
+    @Mapping(target = "gender", source = "gender", qualifiedByName = "toGender")
+    @Mapping(target = "age", source = "age", qualifiedByName = "toAge")
     @Mapping(target = "email", source = "email", qualifiedByName = "toEmail")
     @Mapping(target = "phone", source = "phone", qualifiedByName = "toPhone")
     @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
+    @Mapping(target = "password", source = "password", qualifiedByName = "toPassword")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
     Customer toCustomer(CustomerCreateRequestDto dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identification", source = "identification", qualifiedByName = "toIdentification")
     @Mapping(target = "fullName", source = "name", qualifiedByName = "toFullName")
+    @Mapping(target = "gender", source = "gender", qualifiedByName = "toGender")
+    @Mapping(target = "age", source = "age", qualifiedByName = "toAge")
     @Mapping(target = "email", source = "email", qualifiedByName = "toEmail")
     @Mapping(target = "phone", source = "phone", qualifiedByName = "toPhone")
     @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
+    @Mapping(target = "password", source = "password", qualifiedByName = "toPassword")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
     Customer toCustomer(CustomerUpdateRequestDto dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identification", source = "identification", qualifiedByName = "toIdentification")
     @Mapping(target = "fullName", source = "name", qualifiedByName = "toFullName")
+    @Mapping(target = "gender", source = "gender", qualifiedByName = "toGender")
+    @Mapping(target = "age", source = "age", qualifiedByName = "toAge")
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "phone", source = "phone", qualifiedByName = "toPhone")
     @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
+    @Mapping(target = "password", source = "password", qualifiedByName = "toPassword")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
     Customer toCustomer(CustomerPatchRequestDto dto);
 
     @Mapping(target = "customerId", source = "id", qualifiedByName = "fromId")
     @Mapping(target = "name", source = "fullName", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "identification", source = "identification", qualifiedByName = "fromValueObjectToString")
+    @Mapping(target = "gender", source = "gender", qualifiedByName = "fromValueObjectToString")
+    @Mapping(target = "age", source = "age", qualifiedByName = "fromValueObjectToInteger")
     @Mapping(target = "address", source = "address", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "phone", source = "phone", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "email", source = "email", qualifiedByName = "fromValueObjectToString")
+    @Mapping(target = "password", source = "password", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "status", source = "status", qualifiedByName = "fromValueObjectToBoolean")
-    @Mapping(target = "gender", ignore = true)
-    @Mapping(target = "age", ignore = true)
-    @Mapping(target = "password", ignore = true)
     CustomerDto toCustomerDto(Customer customer);
 
     @Named("toIdentification")
@@ -72,6 +84,16 @@ public interface CustomerHttpRequestMapper {
     @Named("toFullName")
     default FullName toFullName(String value) {
         return value == null ? null : new FullName(value);
+    }
+
+    @Named("toGender")
+    default Gender toGender(String value) {
+        return value == null ? null : new Gender(value);
+    }
+
+    @Named("toAge")
+    default Age toAge(Integer value) {
+        return value == null ? null : new Age(value);
     }
 
     @Named("toEmail")
@@ -87,6 +109,11 @@ public interface CustomerHttpRequestMapper {
     @Named("toAddress")
     default Address toAddress(String value) {
         return value == null ? null : new Address(value);
+    }
+
+    @Named("toPassword")
+    default Password toPassword(String value) {
+        return value == null ? null : new Password(value);
     }
 
     @Named("toStatus")
@@ -106,6 +133,11 @@ public interface CustomerHttpRequestMapper {
 
     @Named("fromValueObjectToBoolean")
     default Boolean fromValueObjectToBoolean(ValueObject<Boolean> vo) {
+        return vo == null ? null : vo.getValue();
+    }
+
+    @Named("fromValueObjectToInteger")
+    default Integer fromValueObjectToInteger(ValueObject<Integer> vo) {
         return vo == null ? null : vo.getValue();
     }
 }

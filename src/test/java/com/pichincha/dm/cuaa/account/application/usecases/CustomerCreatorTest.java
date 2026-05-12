@@ -42,9 +42,12 @@ final class CustomerCreatorTest {
                 null,
                 CustomerMother.random().identification(),
                 CustomerMother.random().fullName(),
+                CustomerMother.random().gender(),
+                CustomerMother.random().age(),
                 CustomerMother.random().email(),
                 CustomerMother.random().phone(),
                 CustomerMother.random().address(),
+                CustomerMother.random().password(),
                 CustomerMother.random().status()
         );
 

@@ -10,7 +10,7 @@ public final class CustomerPatchRequestDtoMother {
     public static CustomerPatchRequestDto random() {
         CustomerPatchRequestDto dto = new CustomerPatchRequestDto();
         dto.setName(FakerMother.faker().name().fullName());
-        dto.setPhone(FakerMother.faker().phoneNumber().phoneNumber());
+        dto.setPhone(FakerMother.faker().number().digits(10));
         dto.setAddress(FakerMother.faker().address().fullAddress());
         dto.setStatus(true);
         return dto;

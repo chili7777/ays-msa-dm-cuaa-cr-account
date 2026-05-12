@@ -12,7 +12,7 @@ public final class CustomerUpdateRequestDtoMother {
         dto.setName(FakerMother.faker().name().fullName());
         dto.setIdentification(FakerMother.faker().number().digits(10));
         dto.setEmail(FakerMother.faker().internet().emailAddress());
-        dto.setPhone(FakerMother.faker().phoneNumber().phoneNumber());
+        dto.setPhone(FakerMother.faker().number().digits(10));
         dto.setAddress(FakerMother.faker().address().fullAddress());
         dto.setStatus(true);
         dto.setPassword(FakerMother.faker().internet().password());

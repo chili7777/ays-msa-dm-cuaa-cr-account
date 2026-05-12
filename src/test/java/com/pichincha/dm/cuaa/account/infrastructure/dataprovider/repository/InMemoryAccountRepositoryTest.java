@@ -115,7 +115,7 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
     }
 
     @Test
-    void given_savedAccount_when_deactivate_then_accountIsDeactivated() {
+    void given_savedAccount_when_deactivate_then_accountIsRemoved() {
         Account account = AccountMother.create(
                 AccountIdMother.random(),
                 CustomerIdMother.random(),
@@ -130,7 +130,6 @@ final class InMemoryAccountRepositoryTest extends AccountInfrastructureTestCase 
         repository.deactivate(account.accountId()).block();
         Account found = repository.findById(account.accountId()).block();
 
-        assertNotNull(found);
-        assertFalse(found.status().getValue());
+        org.junit.jupiter.api.Assertions.assertNull(found);
     }
 }

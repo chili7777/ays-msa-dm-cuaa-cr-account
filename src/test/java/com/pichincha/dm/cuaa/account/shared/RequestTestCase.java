@@ -75,20 +75,28 @@ public abstract class RequestTestCase {
                 .isEqualTo(expectedStatusCode);
     }
 
-    protected void assertRequestWithBody(String method,
+    protected byte[] assertRequestWithBody(String method,
                                          String endpoint,
                                          String body,
                                          Integer expectedStatusCode,
                                          HttpHeaders headers) throws Exception {
 
-        webTestClient.method(HttpMethod.valueOf(method))
+        WebTestClient.ResponseSpec responseSpec = webTestClient.method(HttpMethod.valueOf(method))
                 .uri(endpoint)
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(body), String.class)
-                .exchange()
-                .expectStatus()
-                .isEqualTo(expectedStatusCode);
+                .exchange();
+
+        responseSpec.expectStatus().isEqualTo(expectedStatusCode);
+
+        if (expectedStatusCode == 204) {
+            responseSpec.expectBody().isEmpty();
+            return new byte[0];
+        }
+
+        byte[] response = responseSpec.expectBody().returnResult().getResponseBody();
+        return response != null ? response : new byte[0];
     }
 
     protected void assertRequest(String method,

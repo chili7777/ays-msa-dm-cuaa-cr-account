@@ -11,19 +11,21 @@ import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entiti
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountPatchRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountUpdateRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.AccountHttpRequestMapper;
+import com.pichincha.dm.cuaa.account.domain.entities.ResourceNotFoundException;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
-
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class AccountsController implements AccountsApi {
 
 	private static final ResponseEntity<Void> CREATED_RESPONSE = ResponseEntity.status(HttpStatus.CREATED).build();
@@ -65,7 +67,8 @@ public class AccountsController implements AccountsApi {
 														  ServerWebExchange exchange) {
 		return getAccountByIdUseCase.getAccountById(new AccountId(accountId.toString()))
 				.map(accountHttpRequestMapper::toAccountDto)
-				.map(ResponseEntity::ok);
+				.map(ResponseEntity::ok)
+				.switchIfEmpty(Mono.error(new ResourceNotFoundException("Account not found: " + accountId)));
 	}
 
 	@Override

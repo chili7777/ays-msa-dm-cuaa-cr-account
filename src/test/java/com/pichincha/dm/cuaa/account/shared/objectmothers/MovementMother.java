@@ -3,6 +3,8 @@ package com.pichincha.dm.cuaa.account.shared.objectmothers;
 import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Balance;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 
 public final class MovementMother {
     public static Movement random() {
@@ -11,7 +13,9 @@ public final class MovementMother {
                 AccountIdMother.random(),
                 MovementDateMother.random(),
                 MovementTypeMother.random(),
-                AmountMother.random()
+                AmountMother.random(),
+                BalanceMother.random(),
+                StatusMother.random()
         );
     }
 
@@ -21,7 +25,21 @@ public final class MovementMother {
                 accountId,
                 MovementDateMother.random(),
                 MovementTypeMother.random(),
-                AmountMother.random()
+                AmountMother.random(),
+                BalanceMother.random(),
+                StatusMother.random()
+        );
+    }
+
+    public static Movement withId(MovementId id, AccountId accountId) {
+        return new Movement(
+                id,
+                accountId,
+                MovementDateMother.random(),
+                MovementTypeMother.random(),
+                AmountMother.random(),
+                BalanceMother.random(),
+                StatusMother.random()
         );
     }
 
@@ -31,7 +49,26 @@ public final class MovementMother {
                 AccountIdMother.random(),
                 MovementDateMother.random(),
                 MovementTypeMother.random(),
-                AmountMother.random()
+                AmountMother.random(),
+                BalanceMother.random(),
+                StatusMother.random()
+        );
+    }
+
+    public static Movement create(MovementId movementId,
+                                  AccountId accountId,
+                                  Double amount,
+                                  String movementType,
+                                  Double balance,
+                                  Boolean status) {
+        return new Movement(
+                movementId,
+                accountId,
+                MovementDateMother.random(),
+                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementType(movementType),
+                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Amount(amount),
+                balance != null ? new Balance(balance) : null,
+                status != null ? new Status(status) : null
         );
     }
 }

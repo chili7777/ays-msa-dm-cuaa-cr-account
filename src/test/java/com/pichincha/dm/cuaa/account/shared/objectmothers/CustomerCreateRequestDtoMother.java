@@ -12,7 +12,7 @@ public final class CustomerCreateRequestDtoMother {
                 FakerMother.faker().name().fullName(),
                 FakerMother.faker().number().digits(10),
                 FakerMother.faker().internet().emailAddress(),
-                FakerMother.faker().phoneNumber().phoneNumber(),
+                FakerMother.faker().number().digits(10),
                 FakerMother.faker().address().fullAddress(),
                 true,
                 FakerMother.faker().internet().password(),

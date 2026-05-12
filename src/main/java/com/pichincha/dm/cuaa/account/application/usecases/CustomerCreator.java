@@ -21,9 +21,12 @@ public class CustomerCreator implements CreateCustomerInputPort {
                 ? new Customer(new CustomerId(UUID.randomUUID().toString()),
                                customer.identification(),
                                customer.fullName(),
+                               customer.gender(),
+                               customer.age(),
                                customer.email(),
                                customer.phone(),
                                customer.address(),
+                               customer.password(),
                                customer.status())
                 : customer;
         return repository.save(customerToSave);
