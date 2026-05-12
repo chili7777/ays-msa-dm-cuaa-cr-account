@@ -6,6 +6,8 @@ import com.pichincha.dm.cuaa.account.domain.entities.ResourceNotFoundException;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.*;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.AccountHttpRequestMapper;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.CustomerHttpRequestMapper;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.MovementHttpRequestMapper;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,8 +35,10 @@ public class CustomersController implements CustomersApi {
     private final PatchCustomerInputPort patchCustomerUseCase;
     private final DeleteCustomerInputPort deleteCustomerUseCase;
     private final ListAccountsByCustomerInputPort listAccountsByCustomerUseCase;
+    private final ListMovementsByCustomerAndAccountInputPort listMovementsByCustomerAndAccountUseCase;
     private final CustomerHttpRequestMapper customerMapper;
     private final AccountHttpRequestMapper accountMapper;
+    private final MovementHttpRequestMapper movementMapper;
 
     @Override
     public Mono<ResponseEntity<Void>> createCustomer(UUID xGuid, String xApp, Mono<CustomerCreateRequestDto> customerCreateRequestDto, ServerWebExchange exchange) {
@@ -86,5 +90,14 @@ public class CustomersController implements CustomersApi {
                 .map(customerMapper::toCustomer)
                 .flatMap(c -> replaceCustomerUseCase.replaceCustomer(new CustomerId(customerId.toString()), c))
                 .thenReturn(NO_CONTENT_RESPONSE);
+    }
+
+    @Override
+    public Mono<ResponseEntity<Flux<MovementDto>>> listMovementsByCustomerAndAccount(UUID xGuid, String xApp, UUID customerId, UUID accountId, ServerWebExchange exchange) {
+        return Mono.just(ResponseEntity.ok(
+                listMovementsByCustomerAndAccountUseCase.listMovementsByCustomerAndAccount(
+                                new CustomerId(customerId.toString()),
+                                new AccountId(accountId.toString()))
+                        .map(movementMapper::toMovementDto)));
     }
 }
