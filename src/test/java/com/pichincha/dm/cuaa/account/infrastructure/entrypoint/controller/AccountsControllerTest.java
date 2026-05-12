@@ -114,6 +114,12 @@ class AccountsControllerTest extends RequestTestCase {
     }
 
     @Test
+    void given_accountId_when_listMovementsByAccount_then_returnOkStatus() throws Exception {
+        String accountId = UuidMother.random().toString();
+        assertRequest("GET", "/accounts/" + accountId + "/movements", 200, HttpHeadersMother.random());
+    }
+
+    @Test
     void given_nonExistentAccountId_when_deleteAccount_then_returnNotFound() throws Exception {
         String accountId = UuidMother.random().toString();
         assertRequest("DELETE", "/accounts/" + accountId, 404, HttpHeadersMother.random());

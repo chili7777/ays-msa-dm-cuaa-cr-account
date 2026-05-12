@@ -102,6 +102,12 @@ class CustomersControllerTest extends RequestTestCase {
     }
 
     @Test
+    void given_customerId_when_listAccountsByCustomer_then_returnOkStatus() throws Exception {
+        String customerId = UuidMother.random().toString();
+        assertRequest("GET", "/customers/" + customerId + "/accounts", 200, HttpHeadersMother.random());
+    }
+
+    @Test
     void given_nonExistentCustomerId_when_deleteCustomer_then_returnNotFound() throws Exception {
         String customerId = UuidMother.random().toString();
         assertRequest("DELETE", "/customers/" + customerId, 404, HttpHeadersMother.random());
