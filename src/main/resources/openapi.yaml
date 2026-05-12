@@ -157,6 +157,29 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalError'
+  /customers/{customerId}/accounts/{accountId}/movements:
+    get:
+      operationId: listMovementsByCustomerAndAccount
+      tags: [Movements]
+      summary: List movements by customer and account
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - $ref: '#/components/parameters/CustomerIdPath'
+        - $ref: '#/components/parameters/AccountIdPath'
+      responses:
+        '200':
+          description: Movement list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovementDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /accounts:
     get:
       operationId: listAccounts
