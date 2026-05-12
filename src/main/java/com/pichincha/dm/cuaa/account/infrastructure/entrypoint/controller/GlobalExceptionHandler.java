@@ -1,6 +1,7 @@
 package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller;
 
 import com.pichincha.dm.cuaa.account.domain.entities.ResourceNotFoundException;
+import com.pichincha.dm.cuaa.account.domain.entities.UnauthorizedException;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.ErrorListDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.ErrorModelDto;
 import jakarta.validation.ConstraintViolationException;
@@ -25,6 +26,13 @@ public class GlobalExceptionHandler {
         ErrorModelDto error = new ErrorModelDto("Not Found", ex.getMessage(), "N/A", "/api/v1");
         error.setComponent("TX-ACC-001");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorModelDto> handleUnauthorizedException(UnauthorizedException ex) {
+        ErrorModelDto error = new ErrorModelDto("Unauthorized", ex.getMessage(), "N/A", "/api/v1");
+        error.setComponent("TX-ACC-001");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

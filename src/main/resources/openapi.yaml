@@ -12,6 +12,35 @@ tags:
   - name: Accounts
   - name: Movements
 paths:
+  /customers/login:
+    post:
+      operationId: login
+      tags: [Customers]
+      summary: Customer login
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseDto'
+        '401':
+          description: Unauthorized - Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModelDto'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /customers:
     get:
       operationId: listCustomers
@@ -549,6 +578,26 @@ components:
           type: string
           format: email
           maxLength: 120
+    LoginRequestDto:
+      type: object
+      required: [identification, password]
+      properties:
+        identification:
+          type: string
+          maxLength: 20
+        password:
+          type: string
+          maxLength: 20
+    LoginResponseDto:
+      type: object
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        identification:
+          type: string
     CustomerDto:
       allOf:
         - $ref: '#/components/schemas/PersonBaseDto'

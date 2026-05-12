@@ -42,4 +42,19 @@ public final class CustomerMother {
                 StatusMother.random()
         );
     }
+
+    public static Customer withIdAndCredentials(CustomerId id, String identification, String password) {
+        return new Customer(
+                id,
+                new Identification(identification),
+                FullNameMother.random(),
+                GenderMother.random(),
+                AgeMother.random(),
+                EmailMother.random(),
+                PhoneMother.random(),
+                AddressMother.random(),
+                new Password(password),
+                StatusMother.random()
+        );
+    }
 }

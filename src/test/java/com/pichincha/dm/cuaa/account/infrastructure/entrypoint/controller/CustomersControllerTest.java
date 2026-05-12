@@ -4,6 +4,7 @@ import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateCus
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerCreateRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerPatchRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerUpdateRequestDto;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.LoginRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.InMemoryAccountRepository;
 import com.pichincha.dm.cuaa.account.shared.RequestTestCase;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.*;
@@ -118,5 +119,32 @@ class CustomersControllerTest extends RequestTestCase {
     void given_nonExistentCustomerId_when_deleteCustomer_then_returnNotFound() throws Exception {
         String customerId = UuidMother.random().toString();
         assertRequest("DELETE", "/customers/" + customerId, 404, HttpHeadersMother.random());
+    }
+
+    @Test
+    void given_validCredentials_when_login_then_returnOkStatus() throws Exception {
+        String customerId = UuidMother.random().toString();
+        String identification = "1722334455";
+        String password = "mypassword";
+
+        createCustomerOutputPort.save(CustomerMother.withIdAndCredentials(
+                new CustomerId(customerId), identification, password)).block();
+
+        LoginRequestDto requestDto = new LoginRequestDto();
+        requestDto.setIdentification(identification);
+        requestDto.setPassword(password);
+        String requestBody = JsonMother.fromObject(requestDto);
+
+        assertRequestWithBody("POST", "/customers/login", requestBody, 200, HttpHeadersMother.random());
+    }
+
+    @Test
+    void given_invalidCredentials_when_login_then_returnUnauthorized() throws Exception {
+        LoginRequestDto requestDto = new LoginRequestDto();
+        requestDto.setIdentification("wrong");
+        requestDto.setPassword("wrong");
+        String requestBody = JsonMother.fromObject(requestDto);
+
+        assertRequestWithBody("POST", "/customers/login", requestBody, 401, HttpHeadersMother.random());
     }
 }

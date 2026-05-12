@@ -5,6 +5,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.*;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Identification;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.AccountEntity;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.CustomerEntity;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.MovementEntity;
@@ -23,7 +24,7 @@ import reactor.core.publisher.Mono;
 @Profile({"test", "local", "default", "development", "staging", "production"})
 @RequiredArgsConstructor
 public final class InMemoryAccountRepository implements
-        CreateCustomerOutputPort, ListCustomersOutputPort, GetCustomerByIdOutputPort, ReplaceCustomerOutputPort, PatchCustomerOutputPort, DeleteCustomerOutputPort,
+        CreateCustomerOutputPort, ListCustomersOutputPort, GetCustomerByIdOutputPort, ReplaceCustomerOutputPort, PatchCustomerOutputPort, DeleteCustomerOutputPort, GetCustomerByIdentificationOutputPort,
         CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort,
         CreateMovementOutputPort, ListMovementsOutputPort, GetMovementByIdOutputPort, ReplaceMovementOutputPort, PatchMovementOutputPort, DeleteMovementOutputPort {
 
@@ -58,6 +59,14 @@ public final class InMemoryAccountRepository implements
     @Override
     public Mono<Customer> findById(CustomerId customerId) {
         return Mono.justOrEmpty(customers.get(customerId.getValue())).map(customerMapper::toCustomer);
+    }
+
+    @Override
+    public Mono<Customer> getByIdentification(Identification identification) {
+        return Mono.justOrEmpty(customers.values().stream()
+                        .filter(c -> c.identification().equals(identification.getValue()))
+                        .findFirst())
+                .map(customerMapper::toCustomer);
     }
 
     @Override

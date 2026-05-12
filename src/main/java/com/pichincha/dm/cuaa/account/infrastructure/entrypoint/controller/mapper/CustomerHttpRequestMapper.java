@@ -16,6 +16,7 @@ import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entiti
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerPatchRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerUpdateRequestDto;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.LoginResponseDto;
 import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -75,6 +76,11 @@ public interface CustomerHttpRequestMapper {
     @Mapping(target = "password", source = "password", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "status", source = "status", qualifiedByName = "fromValueObjectToBoolean")
     CustomerDto toCustomerDto(Customer customer);
+
+    @Mapping(target = "customerId", source = "id", qualifiedByName = "fromId")
+    @Mapping(target = "fullName", source = "fullName", qualifiedByName = "fromValueObjectToString")
+    @Mapping(target = "identification", source = "identification", qualifiedByName = "fromValueObjectToString")
+    LoginResponseDto toLoginResponseDto(Customer customer);
 
     @Named("toIdentification")
     default Identification toIdentification(String value) {

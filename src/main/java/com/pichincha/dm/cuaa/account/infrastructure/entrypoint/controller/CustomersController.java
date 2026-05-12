@@ -8,6 +8,8 @@ import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.CustomerHttpRequestMapper;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper.MovementHttpRequestMapper;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Identification;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Password;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,7 @@ public class CustomersController implements CustomersApi {
     private final DeleteCustomerInputPort deleteCustomerUseCase;
     private final ListAccountsByCustomerInputPort listAccountsByCustomerUseCase;
     private final ListMovementsByCustomerAndAccountInputPort listMovementsByCustomerAndAccountUseCase;
+    private final LoginInputPort loginUseCase;
     private final CustomerHttpRequestMapper customerMapper;
     private final AccountHttpRequestMapper accountMapper;
     private final MovementHttpRequestMapper movementMapper;
@@ -99,5 +102,16 @@ public class CustomersController implements CustomersApi {
                                 new CustomerId(customerId.toString()),
                                 new AccountId(accountId.toString()))
                         .map(movementMapper::toMovementDto)));
+    }
+
+    @Override
+    public Mono<ResponseEntity<LoginResponseDto>> login(UUID xGuid, String xApp, Mono<LoginRequestDto> loginRequestDto, ServerWebExchange exchange) {
+        return loginRequestDto
+                .flatMap(dto -> loginUseCase.login(
+                        new Identification(dto.getIdentification()),
+                        new Password(dto.getPassword())
+                ))
+                .map(customerMapper::toLoginResponseDto)
+                .map(ResponseEntity::ok);
     }
 }
