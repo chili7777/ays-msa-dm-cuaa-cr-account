@@ -24,6 +24,7 @@ public class MovementCreator implements CreateMovementInputPort {
     private final PatchAccountOutputPort accountUpdatePort;
     private final GetSystemParameterValueOutputPort parameterPort;
     private final GetDailyWithdrawalSumOutputPort dailySumPort;
+    private final MovementEventPublisher eventPublisher;
 
     @Override
     public Mono<Movement> createMovement(Movement movement) {
@@ -87,6 +88,7 @@ public class MovementCreator implements CreateMovementInputPort {
 
         return movementRepository.save(movementToSave)
                 .then(accountUpdatePort.patch(account.accountId(), accountToPatch))
-                .thenReturn(movementToSave);
+                .thenReturn(movementToSave)
+                .doOnSuccess(eventPublisher::publish);
     }
 }

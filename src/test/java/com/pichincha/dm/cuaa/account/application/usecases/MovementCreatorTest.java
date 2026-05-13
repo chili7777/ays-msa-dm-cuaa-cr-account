@@ -35,6 +35,8 @@ final class MovementCreatorTest {
     private GetSystemParameterValueOutputPort parameterPort;
     @Mock
     private GetDailyWithdrawalSumOutputPort dailySumPort;
+    @Mock
+    private MovementEventPublisher eventPublisher;
 
     @InjectMocks
     private MovementCreator movementCreator;
@@ -60,6 +62,7 @@ final class MovementCreatorTest {
                 .verifyComplete();
 
         verify(movementPersistence, atLeastOnce()).save(any(Movement.class));
+        verify(eventPublisher).publish(any(Movement.class));
     }
 
     @Test
@@ -86,6 +89,7 @@ final class MovementCreatorTest {
 
         verify(dailySumPort).getSumByAccountIdAndDate(movement.accountId());
         verify(movementPersistence).save(argThat(m -> m.amount().getValue() == -50.0));
+        verify(eventPublisher).publish(any(Movement.class));
     }
 
     @Test

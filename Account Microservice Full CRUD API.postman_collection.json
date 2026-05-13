@@ -1,433 +1,524 @@
 {
-  "info": {
-    "_postman_id": "a9d2adca-3224-49ed-a05b-4e802f2ca48f",
-    "name": "Account Microservice Full CRUD API",
-    "description": "API unificada para la gestión de Clientes, Cuentas y Movimientos.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "1. Customers",
-      "item": [
-        {
-          "name": "Create Customer",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Juan Perez\",\n  \"identification\": \"1712345678\",\n  \"email\": \"juan.perez@example.com\",\n  \"phone\": \"0987654321\",\n  \"address\": \"Quito, Ecuador\",\n  \"status\": true,\n  \"password\": \"securePass123\",\n  \"gender\": \"MALE\",\n  \"age\": 30\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/customers",
-              "host": ["{{baseUrl}}"],
-              "path": ["customers"]
-            }
-          }
-        },
-        {
-          "name": "Login",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"identification\": \"1712345678\",\n  \"password\": \"securePass123\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/customers/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["customers", "login"]
-            }
-          }
-        },
-        {
-          "name": "List Customers",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/customers",
-              "host": ["{{baseUrl}}"],
-              "path": ["customers"]
-            }
-          }
-        },
-        {
-          "name": "Get Customer by ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/customers/:customerId",
-              "host": ["{{baseUrl}}"],
-              "path": ["customers", ":customerId"],
-              "variable": [{ "key": "customerId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "Update Customer (PUT)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Juan Perez Actualizado\",\n  \"identification\": \"1712345678\",\n  \"email\": \"juan.new@example.com\",\n  \"phone\": \"022222222\",\n  \"address\": \"Cumbayá, Quito\",\n  \"status\": true,\n  \"password\": \"newPassword123\",\n  \"gender\": \"MALE\",\n  \"age\": 31\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/customers/:customerId",
-              "host": ["{{baseUrl}}"],
-              "path": ["customers", ":customerId"],
-              "variable": [{ "key": "customerId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "Patch Customer (PATCH)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": false\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/customers/:customerId",
-              "host": ["{{baseUrl}}"],
-              "path": ["customers", ":customerId"],
-              "variable": [{ "key": "customerId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "Delete Customer",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/customers/:customerId",
-              "host": ["{{baseUrl}}"],
-              "path": ["customers", ":customerId"],
-              "variable": [{ "key": "customerId", "value": "ID_AQUÍ" }]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "2. Accounts",
-      "item": [
-        {
-          "name": "Create Account",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"clientId\": \"2c92230-dc34-4449-95bd-90117757b117\",\n  \"accountNumber\": \"2203213435\",\n  \"accountType\": \"SAVINGS\",\n  \"initialBalance\": 2000.00,\n  \"status\": true\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/accounts",
-              "host": ["{{baseUrl}}"],
-              "path": ["accounts"]
-            }
-          }
-        },
-        {
-          "name": "List Accounts",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/accounts",
-              "host": ["{{baseUrl}}"],
-              "path": ["accounts"]
-            }
-          }
-        },
-        {
-          "name": "Get Account by ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/accounts/:accountId",
-              "host": ["{{baseUrl}}"],
-              "path": ["accounts", ":accountId"],
-              "variable": [{ "key": "accountId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "Update Account (PUT)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"accountType\": \"CURRENT\",\n  \"status\": true\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/accounts/:accountId",
-              "host": ["{{baseUrl}}"],
-              "path": ["accounts", ":accountId"],
-              "variable": [{ "key": "accountId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "Patch Account (PATCH)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": false\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/accounts/:accountId",
-              "host": ["{{baseUrl}}"],
-              "path": ["accounts", ":accountId"],
-              "variable": [{ "key": "accountId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "Delete Account",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/accounts/:accountId",
-              "host": ["{{baseUrl}}"],
-              "path": ["accounts", ":accountId"],
-              "variable": [{ "key": "accountId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "List Accounts by Customer",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/customers/:customerId/accounts",
-              "host": ["{{baseUrl}}"],
-              "path": ["customers", ":customerId", "accounts"],
-              "variable": [{ "key": "customerId", "value": "ID_AQUÍ" }]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "3. Movements",
-      "item": [
-        {
-          "name": "Create Movement",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"accountId\": \"e98696e0-1308-47fa-93f4-2a3ea34ee981\",\n  \"movementType\": \"WITHDRAWAL\",\n  \"amount\": 100.00,\n  \"movementDate\": \"2024-05-12T15:00:00Z\",\n  \"description\": \"Retiro en cajero\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/movements",
-              "host": ["{{baseUrl}}"],
-              "path": ["movements"]
-            }
-          }
-        },
-        {
-          "name": "List Movements",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/movements?accountId=ID_CUENTA&fromDate=2024-01-01&toDate=2024-12-31",
-              "host": ["{{baseUrl}}"],
-              "path": ["movements"],
-              "query": [
-                { "key": "accountId", "value": "ID_CUENTA" },
-                { "key": "fromDate", "value": "2024-01-01" },
-                { "key": "toDate", "value": "2024-12-31" }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get Movement by ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/movements/:movementId",
-              "host": ["{{baseUrl}}"],
-              "path": ["movements", ":movementId"],
-              "variable": [{ "key": "movementId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "Update Movement (PUT)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"movementType\": \"WITHDRAWAL\",\n  \"amount\": 50.00\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/movements/:movementId",
-              "host": ["{{baseUrl}}"],
-              "path": ["movements", ":movementId"],
-              "variable": [{ "key": "movementId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "Patch Movement (PATCH)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"amount\": 75.25\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/movements/:movementId",
-              "host": ["{{baseUrl}}"],
-              "path": ["movements", ":movementId"],
-              "variable": [{ "key": "movementId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "Delete Movement",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/movements/:movementId",
-              "host": ["{{baseUrl}}"],
-              "path": ["movements", ":movementId"],
-              "variable": [{ "key": "movementId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "List Movements by Account (Alternative)",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/accounts/:accountId/movements",
-              "host": ["{{baseUrl}}"],
-              "path": ["accounts", ":accountId", "movements"],
-              "variable": [{ "key": "accountId", "value": "ID_AQUÍ" }]
-            }
-          }
-        },
-        {
-          "name": "List Movements by Customer and Account",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "x-guid", "value": "{{guid}}" },
-              { "key": "x-app", "value": "{{app}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/customers/:customerId/accounts/:accountId/movements",
-              "host": ["{{baseUrl}}"],
-              "path": ["customers", ":customerId", "accounts", ":accountId", "movements"],
-              "variable": [
-                { "key": "customerId", "value": "ID_AQUÍ" },
-                { "key": "accountId", "value": "ID_AQUÍ" }
-              ]
-            }
-          }
-        }
-      ]
-    }
-  ],
-  "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8080" },
-    { "key": "guid", "value": "550e8400-e29b-41d4-a716-446655440000" },
-    { "key": "app", "value": "postman-test" }
-  ]
+	"info": {
+		"_postman_id": "a9d2adca-3224-49ed-a05b-4e802f2ca48f",
+		"name": "Account Microservice Full CRUD API",
+		"description": "API unificada para la gestión de Clientes, Cuentas y Movimientos. Incluye generación de reportes en PDF, JSON y Base64.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Customers",
+			"item": [
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Juan Perez\",\n  \"identification\": \"1712345678\",\n  \"email\": \"juan.perez@example.com\",\n  \"phone\": \"0987654321\",\n  \"address\": \"Quito, Ecuador\",\n  \"status\": true,\n  \"password\": \"securePass123\",\n  \"gender\": \"MALE\",\n  \"age\": 30\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identification\": \"1712345678\",\n  \"password\": \"securePass123\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", "login"]
+						}
+					}
+				},
+				{
+					"name": "List Customers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"]
+						}
+					}
+				},
+				{
+					"name": "Get Customer by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers/:customerId",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", ":customerId"],
+							"variable": [{ "key": "customerId", "value": "{{customerId}}" }]
+						}
+					}
+				},
+				{
+					"name": "Update Customer (PUT)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Juan Perez Actualizado\",\n  \"identification\": \"1712345678\",\n  \"email\": \"juan.new@example.com\",\n  \"phone\": \"022222222\",\n  \"address\": \"Cumbayá, Quito\",\n  \"status\": true,\n  \"password\": \"newPassword123\",\n  \"gender\": \"MALE\",\n  \"age\": 31\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers/:customerId",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", ":customerId"],
+							"variable": [{ "key": "customerId", "value": "{{customerId}}" }]
+						}
+					}
+				},
+				{
+					"name": "Patch Customer (PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": false\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers/:customerId",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", ":customerId"],
+							"variable": [{ "key": "customerId", "value": "{{customerId}}" }]
+						}
+					}
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers/:customerId",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", ":customerId"],
+							"variable": [{ "key": "customerId", "value": "{{customerId}}" }]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Accounts",
+			"item": [
+				{
+					"name": "Create Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clientId\": \"{{customerId}}\",\n  \"accountNumber\": \"2203213435\",\n  \"accountType\": \"SAVINGS\",\n  \"initialBalance\": 2000.00,\n  \"status\": true\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/accounts",
+							"host": ["{{baseUrl}}"],
+							"path": ["accounts"]
+						}
+					}
+				},
+				{
+					"name": "List Accounts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/accounts",
+							"host": ["{{baseUrl}}"],
+							"path": ["accounts"]
+						}
+					}
+				},
+				{
+					"name": "Get Account by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/accounts/:accountId",
+							"host": ["{{baseUrl}}"],
+							"path": ["accounts", ":accountId"],
+							"variable": [{ "key": "accountId", "value": "{{accountId}}" }]
+						}
+					}
+				},
+				{
+					"name": "Update Account (PUT)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountType\": \"CURRENT\",\n  \"status\": true\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/accounts/:accountId",
+							"host": ["{{baseUrl}}"],
+							"path": ["accounts", ":accountId"],
+							"variable": [{ "key": "accountId", "value": "{{accountId}}" }]
+						}
+					}
+				},
+				{
+					"name": "Patch Account (PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": false\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/accounts/:accountId",
+							"host": ["{{baseUrl}}"],
+							"path": ["accounts", ":accountId"],
+							"variable": [{ "key": "accountId", "value": "{{accountId}}" }]
+						}
+					}
+				},
+				{
+					"name": "Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/accounts/:accountId",
+							"host": ["{{baseUrl}}"],
+							"path": ["accounts", ":accountId"],
+							"variable": [{ "key": "accountId", "value": "{{accountId}}" }]
+						}
+					}
+				},
+				{
+					"name": "List Accounts by Customer",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers/:customerId/accounts",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", ":customerId", "accounts"],
+							"variable": [{ "key": "customerId", "value": "{{customerId}}" }]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Movements",
+			"item": [
+				{
+					"name": "Create Movement",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountId\": \"{{accountId}}\",\n  \"movementType\": \"WITHDRAWAL\",\n  \"amount\": 100.00,\n  \"movementDate\": \"2024-05-12T15:00:00Z\",\n  \"description\": \"Retiro en cajero\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/movements",
+							"host": ["{{baseUrl}}"],
+							"path": ["movements"]
+						}
+					}
+				},
+				{
+					"name": "List Movements",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/movements?accountId={{accountId}}&fromDate=2024-01-01&toDate=2026-12-31&movementType=WITHDRAWAL",
+							"host": ["{{baseUrl}}"],
+							"path": ["movements"],
+							"query": [
+								{ "key": "accountId", "value": "{{accountId}}" },
+								{ "key": "fromDate", "value": "2024-01-01" },
+								{ "key": "toDate", "value": "2026-12-31" },
+								{ "key": "movementType", "value": "WITHDRAWAL", "disabled": true }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Movement by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/movements/:movementId",
+							"host": ["{{baseUrl}}"],
+							"path": ["movements", ":movementId"],
+							"variable": [{ "key": "movementId", "value": "ID_AQUÍ" }]
+						}
+					}
+				},
+				{
+					"name": "Update Movement (PUT)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"movementType\": \"WITHDRAWAL\",\n  \"amount\": 50.00\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/movements/:movementId",
+							"host": ["{{baseUrl}}"],
+							"path": ["movements", ":movementId"],
+							"variable": [{ "key": "movementId", "value": "ID_AQUÍ" }]
+						}
+					}
+				},
+				{
+					"name": "Patch Movement (PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 75.25\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{baseUrl}}/movements/:movementId",
+							"host": ["{{baseUrl}}"],
+							"path": ["movements", ":movementId"],
+							"variable": [{ "key": "movementId", "value": "ID_AQUÍ" }]
+						}
+					}
+				},
+				{
+					"name": "Delete Movement",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/movements/:movementId",
+							"host": ["{{baseUrl}}"],
+							"path": ["movements", ":movementId"],
+							"variable": [{ "key": "movementId", "value": "ID_AQUÍ" }]
+						}
+					}
+				},
+				{
+					"name": "List Movements by Account (Alternative)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/accounts/:accountId/movements",
+							"host": ["{{baseUrl}}"],
+							"path": ["accounts", ":accountId", "movements"],
+							"variable": [{ "key": "accountId", "value": "{{accountId}}" }]
+						}
+					}
+				},
+				{
+					"name": "List Movements by Customer and Account",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/customers/:customerId/accounts/:accountId/movements",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", ":customerId", "accounts", ":accountId", "movements"],
+							"variable": [
+								{ "key": "customerId", "value": "{{customerId}}" },
+								{ "key": "accountId", "value": "{{accountId}}" }
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Reports",
+			"item": [
+				{
+					"name": "Get Account Statement (PDF)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reports/account-statement?customerId={{customerId}}&startDate=2024-01-01&endDate=2026-12-31&format=pdf",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "reports", "account-statement"],
+							"query": [
+								{ "key": "customerId", "value": "{{customerId}}" },
+								{ "key": "startDate", "value": "2024-01-01" },
+								{ "key": "endDate", "value": "2026-12-31" },
+								{ "key": "format", "value": "pdf" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Account Statement (JSON)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reports/account-statement?customerId={{customerId}}&startDate=2024-01-01&endDate=2026-12-31&format=json",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "reports", "account-statement"],
+							"query": [
+								{ "key": "customerId", "value": "{{customerId}}" },
+								{ "key": "startDate", "value": "2024-01-01" },
+								{ "key": "endDate", "value": "2026-12-31" },
+								{ "key": "format", "value": "json" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Account Statement (Base64)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reports/account-statement?customerId={{customerId}}&startDate=2024-01-01&endDate=2026-12-31&format=base64",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "reports", "account-statement"],
+							"query": [
+								{ "key": "customerId", "value": "{{customerId}}" },
+								{ "key": "startDate", "value": "2024-01-01" },
+								{ "key": "endDate", "value": "2026-12-31" },
+								{ "key": "format", "value": "base64" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Reportes (Alternative range format)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "x-guid", "value": "{{guid}}" },
+							{ "key": "x-app", "value": "{{app}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/reports/reportes?customerId={{customerId}}&fecha=2024-01-01,2026-12-31&format=json",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "reports", "reportes"],
+							"query": [
+								{ "key": "customerId", "value": "{{customerId}}" },
+								{ "key": "fecha", "value": "2024-01-01,2026-12-31" },
+								{ "key": "format", "value": "json" }
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{ "key": "baseUrl", "value": "http://localhost:8080" },
+		{ "key": "guid", "value": "550e8400-e29b-41d4-a716-446655440000" },
+		{ "key": "app", "value": "postman-test" },
+		{ "key": "customerId", "value": "ID_DEL_CLIENTE" },
+		{ "key": "accountId", "value": "ID_DE_LA_CUENTA" }
+	]
 }

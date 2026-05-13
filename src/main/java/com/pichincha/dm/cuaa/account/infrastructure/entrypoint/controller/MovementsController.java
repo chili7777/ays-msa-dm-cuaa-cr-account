@@ -9,8 +9,12 @@ import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.mapper
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
@@ -34,6 +38,7 @@ public class MovementsController implements MovementsApi {
     private final ReplaceMovementInputPort replaceMovementUseCase;
     private final PatchMovementInputPort patchMovementUseCase;
     private final DeleteMovementInputPort deleteMovementUseCase;
+    private final GetMovementStreamInputPort getMovementStreamUseCase;
     private final MovementHttpRequestMapper movementMapper;
 
     @Override
@@ -85,5 +90,20 @@ public class MovementsController implements MovementsApi {
                 .map(movementMapper::toMovement)
                 .flatMap(m -> replaceMovementUseCase.replaceMovement(new MovementId(movementId.toString()), m))
                 .thenReturn(NO_CONTENT_RESPONSE);
+    }
+
+    @GetMapping(path = "/movements/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<MovementDto>> getMovementStream() {
+        return getMovementStreamUseCase.getMovementStream()
+                .map(movementMapper::toMovementDto)
+                .map(dto -> ServerSentEvent.<MovementDto>builder(dto).build());
+    }
+
+    @GetMapping(path = "/accounts/{accountId}/movements/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<MovementDto>> getMovementStreamByAccount(@PathVariable UUID accountId) {
+        return getMovementStreamUseCase.getMovementStream()
+                .filter(m -> m.accountId().getValue().equals(accountId.toString()))
+                .map(movementMapper::toMovementDto)
+                .map(dto -> ServerSentEvent.<MovementDto>builder(dto).build());
     }
 }
