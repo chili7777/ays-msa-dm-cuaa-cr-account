@@ -84,7 +84,8 @@ public final class InMemoryAccountRepository implements
                         entity.phone(),
                         entity.address(),
                         entity.password(),
-                        entity.status()
+                        entity.status(),
+                        entity.role()
                 );
                 customers.put(customerId.getValue(), updated);
                 return Mono.empty();
@@ -108,7 +109,8 @@ public final class InMemoryAccountRepository implements
                         customer.phone() != null ? customer.phone().getValue() : existing.phone(),
                         customer.address() != null ? customer.address().getValue() : existing.address(),
                         customer.password() != null ? customer.password().getValue() : existing.password(),
-                        customer.status() != null ? customer.status().getValue() : existing.status()
+                        customer.status() != null ? customer.status().getValue() : existing.status(),
+                        customer.role() != null ? customer.role().getValue() : existing.role()
                 );
                 customers.put(customerId.getValue(), updated);
                 return Mono.empty();

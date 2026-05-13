@@ -10,6 +10,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Gender;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Identification;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Password;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Phone;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Role;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.ValueObject;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.CustomerEntity;
@@ -34,6 +35,7 @@ public interface CustomerRepositoryMapper {
     @Mapping(target = "address", source = "address", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "password", source = "password", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "status", source = "status", qualifiedByName = "fromValueObjectToBoolean")
+    @Mapping(target = "role", source = "role", qualifiedByName = "fromValueObjectToString")
     CustomerEntity toCustomerEntity(Customer customer);
 
     @Mapping(target = "id", source = "id", qualifiedByName = "toCustomerId")
@@ -46,6 +48,7 @@ public interface CustomerRepositoryMapper {
     @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
     @Mapping(target = "password", source = "password", qualifiedByName = "toPassword")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
+    @Mapping(target = "role", source = "role", qualifiedByName = "toRole")
     Customer toCustomer(CustomerEntity customerEntity);
 
     @Named("fromCustomerIdToString")
@@ -116,5 +119,10 @@ public interface CustomerRepositoryMapper {
     @Named("toStatus")
     default Status toStatus(Boolean status) {
         return status == null ? null : new Status(status);
+    }
+
+    @Named("toRole")
+    default Role toRole(String role) {
+        return role == null ? null : new Role(role);
     }
 }

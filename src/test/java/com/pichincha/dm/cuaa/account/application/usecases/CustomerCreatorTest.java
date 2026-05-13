@@ -48,7 +48,8 @@ final class CustomerCreatorTest {
                 CustomerMother.random().phone(),
                 CustomerMother.random().address(),
                 CustomerMother.random().password(),
-                CustomerMother.random().status()
+                CustomerMother.random().status(),
+                CustomerMother.random().role()
         );
 
         when(customerPersistence.save(any(Customer.class))).thenReturn(Mono.empty());

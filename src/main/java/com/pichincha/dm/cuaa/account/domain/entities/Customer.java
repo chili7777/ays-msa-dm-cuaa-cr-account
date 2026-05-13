@@ -9,6 +9,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Gender;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Identification;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Password;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Phone;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Role;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 
 /**
@@ -25,5 +26,6 @@ public record Customer(CustomerId id,
                        Phone phone,
                        Address address,
                        Password password,
-                       Status status) implements Person {
+                       Status status,
+                       Role role) implements Person {
 }

@@ -9,5 +9,6 @@ public record CustomerEntity(String id,
                              String phone,
                              String address,
                              String password,
-                             Boolean status) {
+                             Boolean status,
+                             String role) {
 }

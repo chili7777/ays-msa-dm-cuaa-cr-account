@@ -27,7 +27,8 @@ public class CustomerCreator implements CreateCustomerInputPort {
                                customer.phone(),
                                customer.address(),
                                customer.password(),
-                               customer.status())
+                               customer.status(),
+                               customer.role())
                 : customer;
         return repository.save(customerToSave);
     }

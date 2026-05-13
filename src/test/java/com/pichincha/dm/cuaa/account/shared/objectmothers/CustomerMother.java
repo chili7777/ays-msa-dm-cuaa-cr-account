@@ -10,6 +10,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Gender;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Identification;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Password;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Phone;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Role;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 
 public final class CustomerMother {
@@ -24,7 +25,8 @@ public final class CustomerMother {
                 PhoneMother.random(),
                 AddressMother.random(),
                 PasswordMother.random(),
-                StatusMother.random()
+                StatusMother.random(),
+                RoleMother.random()
         );
     }
 
@@ -39,7 +41,8 @@ public final class CustomerMother {
                 PhoneMother.random(),
                 AddressMother.random(),
                 PasswordMother.random(),
-                StatusMother.random()
+                StatusMother.random(),
+                RoleMother.random()
         );
     }
 
@@ -54,7 +57,8 @@ public final class CustomerMother {
                 PhoneMother.random(),
                 AddressMother.random(),
                 new Password(password),
-                StatusMother.random()
+                StatusMother.random(),
+                RoleMother.random()
         );
     }
 }

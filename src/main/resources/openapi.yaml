@@ -598,6 +598,9 @@ components:
           type: string
         identification:
           type: string
+        role:
+          type: string
+          example: "USER"
     CustomerDto:
       allOf:
         - $ref: '#/components/schemas/PersonBaseDto'
@@ -613,6 +616,9 @@ components:
               maxLength: 120
             status:
               type: boolean
+            role:
+              type: string
+              example: "USER"
     CustomerCreateRequestDto:
       allOf:
         - $ref: '#/components/schemas/PersonBaseDto'
@@ -625,6 +631,9 @@ components:
               maxLength: 120
             status:
               type: boolean
+            role:
+              type: string
+              example: "USER"
     CustomerUpdateRequestDto:
       allOf:
         - $ref: '#/components/schemas/PersonBaseDto'
@@ -637,6 +646,9 @@ components:
               maxLength: 120
             status:
               type: boolean
+            role:
+              type: string
+              example: "USER"
     CustomerPatchRequestDto:
       type: object
       properties:
@@ -665,6 +677,9 @@ components:
           maxLength: 120
         status:
           type: boolean
+        role:
+          type: string
+          example: "USER"
     AccountDto:
       type: object
       required: [accountId, clientId, accountNumber, accountType, initialBalance, status]

@@ -22,4 +22,12 @@ public final class JsonMother {
             throw new RuntimeException("Error converting object to JSON", e);
         }
     }
+
+    public static <T> T toObject(byte[] json, Class<T> clazz) {
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (Exception e) {
+            throw new RuntimeException("Error converting JSON to object", e);
+        }
+    }
 }

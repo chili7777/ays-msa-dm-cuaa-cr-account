@@ -5,6 +5,7 @@ import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entiti
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerPatchRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerUpdateRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.LoginRequestDto;
+import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.LoginResponseDto;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.InMemoryAccountRepository;
 import com.pichincha.dm.cuaa.account.shared.RequestTestCase;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.*;
@@ -135,7 +136,11 @@ class CustomersControllerTest extends RequestTestCase {
         requestDto.setPassword(password);
         String requestBody = JsonMother.fromObject(requestDto);
 
-        assertRequestWithBody("POST", "/customers/login", requestBody, 200, HttpHeadersMother.random());
+        byte[] responseBody = assertRequestWithBody("POST", "/customers/login", requestBody, 200, HttpHeadersMother.random());
+        LoginResponseDto loginResponse = JsonMother.toObject(responseBody, LoginResponseDto.class);
+        
+        org.junit.jupiter.api.Assertions.assertNotNull(loginResponse.getRole());
+        org.junit.jupiter.api.Assertions.assertEquals("USER", loginResponse.getRole());
     }
 
     @Test

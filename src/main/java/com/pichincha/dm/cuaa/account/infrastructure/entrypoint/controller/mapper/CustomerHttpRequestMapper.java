@@ -10,6 +10,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Gender;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Identification;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Password;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Phone;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Role;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.ValueObject;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerCreateRequestDto;
@@ -39,6 +40,7 @@ public interface CustomerHttpRequestMapper {
     @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
     @Mapping(target = "password", source = "password", qualifiedByName = "toPassword")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
+    @Mapping(target = "role", source = "role", qualifiedByName = "toRole")
     Customer toCustomer(CustomerCreateRequestDto dto);
 
     @Mapping(target = "id", ignore = true)
@@ -51,6 +53,7 @@ public interface CustomerHttpRequestMapper {
     @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
     @Mapping(target = "password", source = "password", qualifiedByName = "toPassword")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
+    @Mapping(target = "role", source = "role", qualifiedByName = "toRole")
     Customer toCustomer(CustomerUpdateRequestDto dto);
 
     @Mapping(target = "id", ignore = true)
@@ -63,6 +66,7 @@ public interface CustomerHttpRequestMapper {
     @Mapping(target = "address", source = "address", qualifiedByName = "toAddress")
     @Mapping(target = "password", source = "password", qualifiedByName = "toPassword")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
+    @Mapping(target = "role", source = "role", qualifiedByName = "toRole")
     Customer toCustomer(CustomerPatchRequestDto dto);
 
     @Mapping(target = "customerId", source = "id", qualifiedByName = "fromId")
@@ -75,11 +79,13 @@ public interface CustomerHttpRequestMapper {
     @Mapping(target = "email", source = "email", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "password", source = "password", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "status", source = "status", qualifiedByName = "fromValueObjectToBoolean")
+    @Mapping(target = "role", source = "role", qualifiedByName = "fromValueObjectToString")
     CustomerDto toCustomerDto(Customer customer);
 
     @Mapping(target = "customerId", source = "id", qualifiedByName = "fromId")
     @Mapping(target = "fullName", source = "fullName", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "identification", source = "identification", qualifiedByName = "fromValueObjectToString")
+    @Mapping(target = "role", source = "role", qualifiedByName = "fromValueObjectToString")
     LoginResponseDto toLoginResponseDto(Customer customer);
 
     @Named("toIdentification")
@@ -125,6 +131,11 @@ public interface CustomerHttpRequestMapper {
     @Named("toStatus")
     default Status toStatus(Boolean value) {
         return value == null ? null : new Status(value);
+    }
+
+    @Named("toRole")
+    default Role toRole(String value) {
+        return value == null ? null : new Role(value);
     }
 
     @Named("fromId")
