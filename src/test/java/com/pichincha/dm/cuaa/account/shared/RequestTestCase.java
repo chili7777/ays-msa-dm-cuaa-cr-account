@@ -92,6 +92,13 @@ public abstract class RequestTestCase {
 
         org.springframework.test.web.reactive.server.EntityExchangeResult<byte[]> result = responseSpec.expectBody().returnResult();
         
+        if (result.getStatus().isError()) {
+            byte[] errorBody = result.getResponseBody();
+            if (errorBody != null) {
+                System.err.println("[DEBUG_LOG] Error response body (" + endpoint + "): " + new String(errorBody));
+            }
+        }
+
         assertEquals(expectedStatusCode, result.getStatus().value(), "Status mismatch for " + endpoint);
 
         if (expectedStatusCode == 204) {

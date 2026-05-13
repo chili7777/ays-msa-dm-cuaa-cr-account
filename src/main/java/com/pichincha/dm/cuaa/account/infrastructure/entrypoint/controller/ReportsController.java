@@ -33,9 +33,13 @@ public class ReportsController {
         LocalDate finalEndDate = endDate;
 
         if (fecha != null && fecha.contains(",")) {
-            String[] parts = fecha.split(",");
-            finalStartDate = LocalDate.parse(parts[0]);
-            finalEndDate = LocalDate.parse(parts[1]);
+            try {
+                String[] parts = fecha.split(",");
+                finalStartDate = LocalDate.parse(parts[0]);
+                finalEndDate = LocalDate.parse(parts[1]);
+            } catch (Exception e) {
+                return Mono.error(new IllegalArgumentException("El formato de fecha debe ser YYYY-MM-DD,YYYY-MM-DD"));
+            }
         }
 
         if (finalStartDate == null) finalStartDate = LocalDate.now().minusMonths(1);
