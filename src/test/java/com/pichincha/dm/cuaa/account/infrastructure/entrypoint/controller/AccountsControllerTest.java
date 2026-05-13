@@ -3,7 +3,6 @@ package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountCreateRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountPatchRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.AccountUpdateRequestDto;
-import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.InMemoryAccountRepository;
 import com.pichincha.dm.cuaa.account.shared.RequestTestCase;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.*;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateCustomerOutputPort;
@@ -13,9 +12,15 @@ import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetAccountByIdOutputPort;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.jpa.*;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@ActiveProfiles({"test"})
 class AccountsControllerTest extends RequestTestCase {
+
 
     @Autowired
     private CreateCustomerOutputPort createCustomerOutputPort;
@@ -24,11 +29,16 @@ class AccountsControllerTest extends RequestTestCase {
     private CreateAccountOutputPort createAccountOutputPort;
 
     @Autowired
-    private InMemoryAccountRepository repository;
+    private AccountJpaRepository accountJpaRepository;
+    @Autowired
+    private CustomerJpaRepository customerJpaRepository;
+    @Autowired
+    private GetAccountByIdOutputPort getAccountByIdOutputPort;
 
     @BeforeEach
     void setUp() {
-        repository.clear();
+        accountJpaRepository.deleteAll();
+        customerJpaRepository.deleteAll();
     }
 
     @Test
@@ -81,7 +91,7 @@ class AccountsControllerTest extends RequestTestCase {
         assertRequestWithBody("PUT", "/accounts/" + accountId, requestBody, 204, HttpHeadersMother.random());
 
         // Verify that accountNumber and initialBalance are preserved
-        repository.findById(new AccountId(accountId))
+        getAccountByIdOutputPort.findById(new AccountId(accountId))
                 .doOnNext(account -> {
                     org.junit.jupiter.api.Assertions.assertEquals(accountNumber, account.accountNumber().getValue());
                     org.junit.jupiter.api.Assertions.assertEquals(initialBalance, account.initialBalance().getValue());

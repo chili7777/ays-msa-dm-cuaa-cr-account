@@ -13,7 +13,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Phone;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Role;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.ValueObject;
-import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.CustomerEntity;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.ClientEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -36,7 +36,7 @@ public interface CustomerRepositoryMapper {
     @Mapping(target = "password", source = "password", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "status", source = "status", qualifiedByName = "fromValueObjectToBoolean")
     @Mapping(target = "role", source = "role", qualifiedByName = "fromValueObjectToString")
-    CustomerEntity toCustomerEntity(Customer customer);
+    ClientEntity toCustomerEntity(Customer customer);
 
     @Mapping(target = "id", source = "id", qualifiedByName = "toCustomerId")
     @Mapping(target = "identification", source = "identification", qualifiedByName = "toIdentification")
@@ -49,7 +49,7 @@ public interface CustomerRepositoryMapper {
     @Mapping(target = "password", source = "password", qualifiedByName = "toPassword")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
     @Mapping(target = "role", source = "role", qualifiedByName = "toRole")
-    Customer toCustomer(CustomerEntity customerEntity);
+    Customer toCustomer(ClientEntity customerEntity);
 
     @Named("fromCustomerIdToString")
     default String fromCustomerIdToString(CustomerId customerId) {

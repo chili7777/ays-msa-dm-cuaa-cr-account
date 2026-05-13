@@ -11,6 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public abstract class RequestTestCase {
@@ -88,14 +90,15 @@ public abstract class RequestTestCase {
                 .body(Mono.just(body), String.class)
                 .exchange();
 
-        responseSpec.expectStatus().isEqualTo(expectedStatusCode);
+        org.springframework.test.web.reactive.server.EntityExchangeResult<byte[]> result = responseSpec.expectBody().returnResult();
+        
+        assertEquals(expectedStatusCode, result.getStatus().value(), "Status mismatch for " + endpoint);
 
         if (expectedStatusCode == 204) {
-            responseSpec.expectBody().isEmpty();
             return new byte[0];
         }
 
-        byte[] response = responseSpec.expectBody().returnResult().getResponseBody();
+        byte[] response = result.getResponseBody();
         return response != null ? response : new byte[0];
     }
 
@@ -120,14 +123,22 @@ public abstract class RequestTestCase {
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .exchange();
 
-        responseSpec.expectStatus().isEqualTo(expectedStatusCode);
+        org.springframework.test.web.reactive.server.EntityExchangeResult<byte[]> result = responseSpec.expectBody().returnResult();
+
+        if (result.getStatus().isError()) {
+            byte[] errorBody = result.getResponseBody();
+            if (errorBody != null) {
+                System.err.println("[DEBUG_LOG] Error response body (" + endpoint + "): " + new String(errorBody));
+            }
+        }
+        
+        assertEquals(expectedStatusCode, result.getStatus().value(), "Status mismatch for " + endpoint);
 
         if (expectedStatusCode == 204) {
-            responseSpec.expectBody().isEmpty();
             return new byte[0];
         }
 
-        byte[] response = responseSpec.expectBody().returnResult().getResponseBody();
+        byte[] response = result.getResponseBody();
         return response != null ? response : new byte[0];
     }
 }

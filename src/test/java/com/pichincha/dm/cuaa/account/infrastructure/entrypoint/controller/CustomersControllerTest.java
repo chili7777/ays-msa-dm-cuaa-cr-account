@@ -6,25 +6,38 @@ import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entiti
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.CustomerUpdateRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.LoginRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.LoginResponseDto;
-import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.InMemoryAccountRepository;
 import com.pichincha.dm.cuaa.account.shared.RequestTestCase;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.*;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetCustomerByIdOutputPort;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.jpa.*;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@ActiveProfiles({"test"})
 class CustomersControllerTest extends RequestTestCase {
+
 
     @Autowired
     private CreateCustomerOutputPort createCustomerOutputPort;
 
     @Autowired
-    private InMemoryAccountRepository repository;
+    private CustomerJpaRepository customerJpaRepository;
+    @Autowired
+    private AccountJpaRepository accountJpaRepository;
+    @Autowired
+    private MovementJpaRepository movementJpaRepository;
+    @Autowired
+    private GetCustomerByIdOutputPort getCustomerByIdOutputPort;
 
     @BeforeEach
     void setUp() {
-        repository.clear();
+        movementJpaRepository.deleteAll();
+        accountJpaRepository.deleteAll();
+        customerJpaRepository.deleteAll();
     }
 
     @Test
@@ -75,7 +88,7 @@ class CustomersControllerTest extends RequestTestCase {
         assertRequestWithBody("PUT", "/customers/" + customerId, requestBody, 204, HttpHeadersMother.random());
 
         // Verificar que el ID se preservó en el repositorio
-        var updatedCustomer = repository.findById(new CustomerId(customerId)).block();
+        var updatedCustomer = getCustomerByIdOutputPort.findById(new CustomerId(customerId)).block();
         org.junit.jupiter.api.Assertions.assertNotNull(updatedCustomer);
         org.junit.jupiter.api.Assertions.assertEquals(customerId, updatedCustomer.id().getValue());
     }
@@ -99,7 +112,7 @@ class CustomersControllerTest extends RequestTestCase {
         assertRequest("DELETE", "/customers/" + customerId, 204, HttpHeadersMother.random());
 
         // Verificar que el cliente ya no existe en el repositorio (borrado físico)
-        var deletedCustomer = repository.findById(new CustomerId(customerId)).block();
+        var deletedCustomer = getCustomerByIdOutputPort.findById(new CustomerId(customerId)).block();
         org.junit.jupiter.api.Assertions.assertNull(deletedCustomer);
     }
 

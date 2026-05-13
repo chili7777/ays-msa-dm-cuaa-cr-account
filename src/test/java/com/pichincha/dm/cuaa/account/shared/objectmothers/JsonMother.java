@@ -30,4 +30,12 @@ public final class JsonMother {
             throw new RuntimeException("Error converting JSON to object", e);
         }
     }
+
+    public static <T> java.util.List<T> toList(byte[] json, Class<T> clazz) {
+        try {
+            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(java.util.List.class, clazz));
+        } catch (Exception e) {
+            throw new RuntimeException("Error converting JSON to list", e);
+        }
+    }
 }

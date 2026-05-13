@@ -3,7 +3,6 @@ package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.MovementCreateRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.MovementPatchRequestDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.MovementUpdateRequestDto;
-import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.InMemoryAccountRepository;
 import com.pichincha.dm.cuaa.account.shared.RequestTestCase;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.*;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateCustomerOutputPort;
@@ -15,9 +14,14 @@ import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.jpa.*;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@ActiveProfiles({"test"})
 class MovementsControllerTest extends RequestTestCase {
+
 
     @Autowired
     private CreateCustomerOutputPort createCustomerOutputPort;
@@ -29,11 +33,17 @@ class MovementsControllerTest extends RequestTestCase {
     private CreateMovementOutputPort createMovementOutputPort;
 
     @Autowired
-    private InMemoryAccountRepository repository;
+    private MovementJpaRepository movementJpaRepository;
+    @Autowired
+    private AccountJpaRepository accountJpaRepository;
+    @Autowired
+    private CustomerJpaRepository customerJpaRepository;
 
     @BeforeEach
     void setUp() {
-        repository.clear();
+        movementJpaRepository.deleteAll();
+        accountJpaRepository.deleteAll();
+        customerJpaRepository.deleteAll();
     }
 
     @Test

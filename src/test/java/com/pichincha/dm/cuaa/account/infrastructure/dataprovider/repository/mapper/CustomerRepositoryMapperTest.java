@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
-import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.CustomerEntity;
+import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.entities.ClientEntity;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerMother;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -17,38 +17,38 @@ class CustomerRepositoryMapperTest {
     void shouldMapDomainToEntityWithAllFields() {
         Customer domain = CustomerMother.random();
 
-        CustomerEntity entity = mapper.toCustomerEntity(domain);
+        ClientEntity entity = mapper.toCustomerEntity(domain);
 
         assertNotNull(entity);
-        assertEquals(domain.id().getValue(), entity.id());
-        assertEquals(domain.identification().getValue(), entity.identification());
-        assertEquals(domain.fullName().getValue(), entity.fullName());
-        assertEquals(domain.gender().getValue(), entity.gender());
-        assertEquals(domain.age().getValue(), entity.age());
-        assertEquals(domain.email().getValue(), entity.email());
-        assertEquals(domain.phone().getValue(), entity.phone());
-        assertEquals(domain.address().getValue(), entity.address());
-        assertEquals(domain.password().getValue(), entity.password());
-        assertEquals(domain.status().getValue(), entity.status());
+        assertEquals(domain.id().getValue(), entity.getId());
+        assertEquals(domain.identification().getValue(), entity.getIdentification());
+        assertEquals(domain.fullName().getValue(), entity.getFullName());
+        assertEquals(domain.gender().getValue(), entity.getGender());
+        assertEquals(domain.age().getValue(), entity.getAge());
+        assertEquals(domain.email().getValue(), entity.getEmail());
+        assertEquals(domain.phone().getValue(), entity.getPhone());
+        assertEquals(domain.address().getValue(), entity.getAddress());
+        assertEquals(domain.password().getValue(), entity.getPassword());
+        assertEquals(domain.status().getValue(), entity.getStatus());
     }
 
     @Test
     void shouldMapEntityToDomainWithAllFields() {
         Customer domainOriginal = CustomerMother.random();
-        CustomerEntity entity = mapper.toCustomerEntity(domainOriginal);
+        ClientEntity entity = mapper.toCustomerEntity(domainOriginal);
 
         Customer domainMapped = mapper.toCustomer(entity);
 
         assertNotNull(domainMapped);
-        assertEquals(entity.id(), domainMapped.id().getValue());
-        assertEquals(entity.identification(), domainMapped.identification().getValue());
-        assertEquals(entity.fullName(), domainMapped.fullName().getValue());
-        assertEquals(entity.gender(), domainMapped.gender().getValue());
-        assertEquals(entity.age(), domainMapped.age().getValue());
-        assertEquals(entity.email(), domainMapped.email().getValue());
-        assertEquals(entity.phone(), domainMapped.phone().getValue());
-        assertEquals(entity.address(), domainMapped.address().getValue());
-        assertEquals(entity.password(), domainMapped.password().getValue());
-        assertEquals(entity.status(), domainMapped.status().getValue());
+        assertEquals(entity.getId(), domainMapped.id().getValue());
+        assertEquals(entity.getIdentification(), domainMapped.identification().getValue());
+        assertEquals(entity.getFullName(), domainMapped.fullName().getValue());
+        assertEquals(entity.getGender(), domainMapped.gender().getValue());
+        assertEquals(entity.getAge(), domainMapped.age().getValue());
+        assertEquals(entity.getEmail(), domainMapped.email().getValue());
+        assertEquals(entity.getPhone(), domainMapped.phone().getValue());
+        assertEquals(entity.getAddress(), domainMapped.address().getValue());
+        assertEquals(entity.getPassword(), domainMapped.password().getValue());
+        assertEquals(entity.getStatus(), domainMapped.status().getValue());
     }
 }
