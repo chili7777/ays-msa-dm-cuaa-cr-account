@@ -19,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -34,8 +36,8 @@ public class JpaAccountRepository implements
     private final CustomerJpaRepository customerJpaRepository;
     private final AccountJpaRepository accountJpaRepository;
     private final MovementJpaRepository movementJpaRepository;
-
     private final AccountRepositoryMapper accountMapper;
+    private final PlatformTransactionManager transactionManager;
 
     // --- Account Implementation ---
     @Override
@@ -107,15 +109,18 @@ public class JpaAccountRepository implements
     }
 
     @Override
-    @Transactional
     public Mono<Void> deactivate(AccountId accountId) {
         return Mono.fromRunnable(() -> {
-            if (accountJpaRepository.existsById(accountId.getValue())) {
-                movementJpaRepository.deleteByAccountId(accountId.getValue());
-                accountJpaRepository.deleteById(accountId.getValue());
-            } else {
-                throw new ResourceNotFoundException("Account not found: " + accountId.getValue());
-            }
+            TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+            transactionTemplate.execute(status -> {
+                if (accountJpaRepository.existsById(accountId.getValue())) {
+                    movementJpaRepository.deleteByAccountId(accountId.getValue());
+                    accountJpaRepository.deleteById(accountId.getValue());
+                } else {
+                    throw new ResourceNotFoundException("Account not found: " + accountId.getValue());
+                }
+                return null;
+            });
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }
 }

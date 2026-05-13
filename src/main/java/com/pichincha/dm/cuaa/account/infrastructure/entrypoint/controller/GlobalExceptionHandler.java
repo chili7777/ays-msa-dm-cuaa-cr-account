@@ -110,11 +110,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorModelDto> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         log.error("Data integrity violation", ex);
         String message = "Error de integridad de datos. Posible duplicado o valor inválido.";
-        if (ex.getMessage() != null && ex.getMessage().contains("uk_clients_identification")) {
+        String detail = ex.getMessage() != null ? ex.getMessage() : "";
+        
+        if (detail.contains("uk_clients_identification")) {
             message = "La identificación ya existe";
-        } else if (ex.getMessage() != null && ex.getMessage().contains("uk_accounts_number")) {
+        } else if (detail.contains("uk_accounts_number")) {
             message = "El número de cuenta ya existe";
+        } else if (detail.toLowerCase().contains("foreign key") || detail.toLowerCase().contains("referential integrity")) {
+            message = "No se puede eliminar o modificar el registro porque tiene información relacionada vinculada.";
         }
+        
         ErrorModelDto error = new ErrorModelDto("Bad Request", message, "N/A", "/api/v1");
         error.setComponent("TX-ACC-001");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);

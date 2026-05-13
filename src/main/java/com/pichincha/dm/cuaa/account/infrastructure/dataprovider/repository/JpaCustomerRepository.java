@@ -14,7 +14,9 @@ import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.mapp
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -29,6 +31,7 @@ public class JpaCustomerRepository implements
     private final AccountJpaRepository accountJpaRepository;
     private final MovementJpaRepository movementJpaRepository;
     private final CustomerRepositoryMapper customerMapper;
+    private final PlatformTransactionManager transactionManager;
 
     @Override
     public Mono<Void> save(Customer customer) {
@@ -104,20 +107,23 @@ public class JpaCustomerRepository implements
     }
 
     @Override
-    @Transactional
     public Mono<Void> deactivate(CustomerId customerId) {
         return Mono.fromRunnable(() -> {
-            if (customerJpaRepository.existsById(customerId.getValue())) {
-                String cid = customerId.getValue();
-                java.util.List<AccountEntity> accounts = accountJpaRepository.findByClientId(cid);
-                for (AccountEntity account : accounts) {
-                    movementJpaRepository.deleteByAccountId(account.getAccountId());
+            TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+            transactionTemplate.execute(status -> {
+                if (customerJpaRepository.existsById(customerId.getValue())) {
+                    String cid = customerId.getValue();
+                    java.util.List<AccountEntity> accounts = accountJpaRepository.findByClientId(cid);
+                    for (AccountEntity account : accounts) {
+                        movementJpaRepository.deleteByAccountId(account.getAccountId());
+                    }
+                    accountJpaRepository.deleteByClientId(cid);
+                    customerJpaRepository.deleteById(cid);
+                } else {
+                    throw new ResourceNotFoundException("Customer not found: " + customerId.getValue());
                 }
-                accountJpaRepository.deleteByClientId(cid);
-                customerJpaRepository.deleteById(cid);
-            } else {
-                throw new ResourceNotFoundException("Customer not found: " + customerId.getValue());
-            }
+                return null;
+            });
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }
 }
