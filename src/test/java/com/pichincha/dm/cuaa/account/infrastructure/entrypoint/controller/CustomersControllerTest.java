@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetCustomerByIdOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PasswordHasher;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.jpa.*;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -32,6 +33,9 @@ class CustomersControllerTest extends RequestTestCase {
     private MovementJpaRepository movementJpaRepository;
     @Autowired
     private GetCustomerByIdOutputPort getCustomerByIdOutputPort;
+
+    @Autowired
+    private PasswordHasher passwordHasher;
 
     @BeforeEach
     void setUp() {
@@ -140,9 +144,10 @@ class CustomersControllerTest extends RequestTestCase {
         String customerId = UuidMother.random().toString();
         String identification = "1722334455";
         String password = "mypassword";
+        String hashed = passwordHasher.hash(password);
 
         createCustomerOutputPort.save(CustomerMother.withIdAndCredentials(
-                new CustomerId(customerId), identification, password)).block();
+                new CustomerId(customerId), identification, hashed)).block();
 
         LoginRequestDto requestDto = new LoginRequestDto();
         requestDto.setIdentification(identification);
@@ -151,7 +156,7 @@ class CustomersControllerTest extends RequestTestCase {
 
         byte[] responseBody = assertRequestWithBody("POST", "/customers/login", requestBody, 200, HttpHeadersMother.random());
         LoginResponseDto loginResponse = JsonMother.toObject(responseBody, LoginResponseDto.class);
-        
+
         org.junit.jupiter.api.Assertions.assertNotNull(loginResponse.getRole());
         org.junit.jupiter.api.Assertions.assertEquals("USER", loginResponse.getRole());
     }

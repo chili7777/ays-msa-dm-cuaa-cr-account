@@ -1,8 +1,6 @@
 package com.pichincha.dm.cuaa.account.application.usecases;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PasswordHasher;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchCustomerOutputPort;
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
@@ -15,11 +13,19 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 final class CustomerPatcherTest {
 
     @Mock
     private PatchCustomerOutputPort customerPersistence;
+
+    @Mock
+    private PasswordHasher passwordHasher;
 
     @InjectMocks
     private CustomerPatcher customerPatcher;
@@ -29,10 +35,11 @@ final class CustomerPatcherTest {
         CustomerId customerId = CustomerIdMother.random();
         Customer customer = CustomerMother.random();
 
-        when(customerPersistence.patch(customerId, customer)).thenReturn(Mono.empty());
+        when(passwordHasher.hash(anyString())).thenReturn("hashedPassword");
+        when(customerPersistence.patch(any(CustomerId.class), any(Customer.class))).thenReturn(Mono.empty());
 
         customerPatcher.patchCustomer(customerId, customer).block();
 
-        verify(customerPersistence).patch(customerId, customer);
+        verify(customerPersistence).patch(any(CustomerId.class), any(Customer.class));
     }
 }
