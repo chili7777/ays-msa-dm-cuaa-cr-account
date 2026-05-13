@@ -1,5 +1,6 @@
 package com.pichincha.dm.cuaa.account.application.usecases;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
@@ -7,8 +8,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateCustomerOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetCustomerByIdentificationOutputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PasswordHasher;
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
+import com.pichincha.dm.cuaa.account.domain.entities.DuplicateResourceException;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Password;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerMother;
 import org.junit.jupiter.api.Test;
@@ -25,6 +28,9 @@ final class CustomerCreatorTest {
     private CreateCustomerOutputPort customerPersistence;
 
     @Mock
+    private GetCustomerByIdentificationOutputPort getCustomerByIdentification;
+
+    @Mock
     private PasswordHasher passwordHasher;
 
     @InjectMocks
@@ -36,6 +42,7 @@ final class CustomerCreatorTest {
         String rawPassword = customer.password().getValue();
         String hashed = "hashedPassword";
 
+        when(getCustomerByIdentification.getByIdentification(any())).thenReturn(Mono.empty());
         when(passwordHasher.hash(rawPassword)).thenReturn(hashed);
         when(customerPersistence.save(any(Customer.class))).thenReturn(Mono.empty());
 
@@ -63,11 +70,20 @@ final class CustomerCreatorTest {
                 CustomerMother.random().role()
         );
 
+        when(getCustomerByIdentification.getByIdentification(any())).thenReturn(Mono.empty());
         when(passwordHasher.hash(any())).thenReturn("hashed");
         when(customerPersistence.save(any(Customer.class))).thenReturn(Mono.empty());
 
         customerCreator.createCustomer(customerWithoutId).block();
 
         verify(customerPersistence).save(argThat(cust -> cust.id() != null));
+    }
+    @Test
+    void given_duplicateIdentification_when_createCustomer_then_throwDuplicateResourceException() {
+        Customer customer = CustomerMother.random();
+
+        when(getCustomerByIdentification.getByIdentification(any())).thenReturn(Mono.just(customer));
+
+        assertThrows(DuplicateResourceException.class, () -> customerCreator.createCustomer(customer).block());
     }
 }

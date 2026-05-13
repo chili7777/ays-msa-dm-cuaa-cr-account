@@ -29,7 +29,7 @@ import reactor.core.scheduler.Schedulers;
 @Slf4j
 @Transactional
 public class JpaAccountRepository implements
-        CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort {
+        CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort, GetAccountByAccountNumberOutputPort {
 
     private final CustomerJpaRepository customerJpaRepository;
     private final AccountJpaRepository accountJpaRepository;
@@ -66,6 +66,14 @@ public class JpaAccountRepository implements
     @Override
     public Mono<Account> findById(AccountId accountId) {
         return Mono.fromCallable(() -> accountJpaRepository.findById(accountId.getValue()))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(Mono::justOrEmpty)
+                .map(accountMapper::toAccount);
+    }
+
+    @Override
+    public Mono<Account> getByAccountNumber(String accountNumber) {
+        return Mono.fromCallable(() -> accountJpaRepository.findByAccountNumber(accountNumber))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(Mono::justOrEmpty)
                 .map(accountMapper::toAccount);

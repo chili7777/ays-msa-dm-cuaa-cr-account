@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetCustomerByIdentificationOutputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PasswordHasher;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.ReplaceCustomerOutputPort;
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
@@ -25,6 +26,9 @@ final class CustomerReplacerTest {
     private ReplaceCustomerOutputPort customerPersistence;
 
     @Mock
+    private GetCustomerByIdentificationOutputPort getCustomerByIdentification;
+
+    @Mock
     private PasswordHasher passwordHasher;
 
     @InjectMocks
@@ -37,6 +41,7 @@ final class CustomerReplacerTest {
         String rawPassword = customer.password().getValue();
         String hashed = "hashedPassword";
 
+        when(getCustomerByIdentification.getByIdentification(any())).thenReturn(Mono.empty());
         when(passwordHasher.hash(rawPassword)).thenReturn(hashed);
         when(customerPersistence.update(any(), any())).thenReturn(Mono.empty());
 

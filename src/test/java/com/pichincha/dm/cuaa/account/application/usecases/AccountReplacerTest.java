@@ -1,9 +1,11 @@
 package com.pichincha.dm.cuaa.account.application.usecases;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetAccountByAccountNumberOutputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.ReplaceAccountOutputPort;
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
@@ -23,6 +25,9 @@ final class AccountReplacerTest {
     @Mock
     private ReplaceAccountOutputPort accountPersistence;
 
+    @Mock
+    private GetAccountByAccountNumberOutputPort getAccountByAccountNumber;
+
     @InjectMocks
     private AccountReplacer accountReplacer;
 
@@ -31,6 +36,7 @@ final class AccountReplacerTest {
         AccountId accountId = AccountIdMother.random();
         Account account = AccountMother.random();
 
+        when(getAccountByAccountNumber.getByAccountNumber(anyString())).thenReturn(Mono.empty());
         when(accountPersistence.update(accountId, account)).thenReturn(Mono.empty());
 
         accountReplacer.replaceAccount(accountId, account).block();

@@ -1,5 +1,6 @@
 package com.pichincha.dm.cuaa.account.application.usecases;
 
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetCustomerByIdentificationOutputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PasswordHasher;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchCustomerOutputPort;
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
@@ -25,6 +26,9 @@ final class CustomerPatcherTest {
     private PatchCustomerOutputPort customerPersistence;
 
     @Mock
+    private GetCustomerByIdentificationOutputPort getCustomerByIdentification;
+
+    @Mock
     private PasswordHasher passwordHasher;
 
     @InjectMocks
@@ -35,6 +39,7 @@ final class CustomerPatcherTest {
         CustomerId customerId = CustomerIdMother.random();
         Customer customer = CustomerMother.random();
 
+        when(getCustomerByIdentification.getByIdentification(any())).thenReturn(Mono.empty());
         when(passwordHasher.hash(anyString())).thenReturn("hashedPassword");
         when(customerPersistence.patch(any(CustomerId.class), any(Customer.class))).thenReturn(Mono.empty());
 

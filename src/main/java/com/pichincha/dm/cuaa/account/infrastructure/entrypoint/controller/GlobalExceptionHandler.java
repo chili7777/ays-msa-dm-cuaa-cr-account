@@ -1,5 +1,6 @@
 package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller;
 
+import com.pichincha.dm.cuaa.account.domain.entities.DuplicateResourceException;
 import com.pichincha.dm.cuaa.account.domain.entities.ResourceNotFoundException;
 import com.pichincha.dm.cuaa.account.domain.entities.UnauthorizedException;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.ErrorListDto;
@@ -25,6 +26,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorModelDto> handleResourceNotFoundException(ResourceNotFoundException ex) {
         ErrorModelDto error = new ErrorModelDto("Not Found", ex.getMessage(), "N/A", "/api/v1");
         error.setComponent("TX-ACC-001");
+        // Check if it's a business validation (e.g. from AccountCreator) or a direct lookup
+        if (ex.getMessage().contains("El cliente con ID") || ex.getMessage().contains("no existe")) {
+            error.setTitle("Bad Request");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
@@ -38,6 +44,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorModelDto> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorModelDto error = new ErrorModelDto("Bad Request", ex.getMessage(), "N/A", "/api/v1");
+        error.setComponent("TX-ACC-001");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorModelDto> handleDuplicateResourceException(DuplicateResourceException ex) {
+        ErrorModelDto error = new ErrorModelDto("Conflict", ex.getMessage(), "N/A", "/api/v1");
         error.setComponent("TX-ACC-001");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
