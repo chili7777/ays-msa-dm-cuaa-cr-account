@@ -24,7 +24,7 @@ import reactor.core.scheduler.Schedulers;
 @RequiredArgsConstructor
 @Transactional
 public class JpaMovementRepository implements
-        CreateMovementOutputPort, ListMovementsOutputPort, GetMovementByIdOutputPort, ReplaceMovementOutputPort, PatchMovementOutputPort, DeleteMovementOutputPort, GetDailyWithdrawalSumOutputPort {
+        CreateMovementOutputPort, ListMovementsOutputPort, GetMovementByIdOutputPort, ReplaceMovementOutputPort, PatchMovementOutputPort, DeleteMovementOutputPort, GetDailyWithdrawalSumOutputPort, GetMovementsByDateRangeOutputPort {
 
     private final MovementJpaRepository movementJpaRepository;
     private final AccountJpaRepository accountJpaRepository;
@@ -127,5 +127,12 @@ public class JpaMovementRepository implements
                     accountId.getValue(), "WITHDRAWAL", startOfDay, endOfDay);
             return sum != null ? sum : 0.0;
         }).subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @Override
+    public Flux<Movement> findByAccountIdAndDateRange(AccountId accountId, LocalDateTime start, LocalDateTime end) {
+        return Flux.defer(() -> Flux.fromIterable(movementJpaRepository.findByAccountIdAndMovementDateBetween(accountId.getValue(), start, end)))
+                .map(movementMapper::toMovement)
+                .subscribeOn(Schedulers.boundedElastic());
     }
 }

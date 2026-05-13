@@ -12,4 +12,6 @@ public interface MovementJpaRepository extends JpaRepository<MovementEntity, Str
 
     @Query("SELECT SUM(m.amount) FROM MovementEntity m WHERE m.accountId = :accountId AND m.movementType = :type AND m.movementDate >= :start AND m.movementDate <= :end AND m.status = true")
     Double sumAmountByAccountIdAndTypeAndDateBetween(String accountId, String type, LocalDateTime start, LocalDateTime end);
+
+    List<MovementEntity> findByAccountIdAndMovementDateBetween(String accountId, LocalDateTime start, LocalDateTime end);
 }
