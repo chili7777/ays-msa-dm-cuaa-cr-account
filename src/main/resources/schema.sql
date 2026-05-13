@@ -1,5 +1,12 @@
+-- Drop Tables if they exist (to start with an empty database each time)
+DROP TABLE IF EXISTS movements;
+DROP TABLE IF EXISTS accounts;
+DROP TABLE IF EXISTS clients;
+DROP TABLE IF EXISTS persons;
+DROP TABLE IF EXISTS system_parameters;
+
 -- Create Persons Table
-CREATE TABLE IF NOT EXISTS persons (
+CREATE TABLE persons (
     id VARCHAR(36) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
     gender VARCHAR(20),
@@ -12,7 +19,7 @@ CREATE TABLE IF NOT EXISTS persons (
 );
 
 -- Create Clients Table
-CREATE TABLE IF NOT EXISTS clients (
+CREATE TABLE clients (
     id VARCHAR(36) NOT NULL,
     identification VARCHAR(20) NOT NULL,
     password VARCHAR(100) NOT NULL,
@@ -24,7 +31,7 @@ CREATE TABLE IF NOT EXISTS clients (
 );
 
 -- Create Accounts Table
-CREATE TABLE IF NOT EXISTS accounts (
+CREATE TABLE accounts (
     account_id VARCHAR(36) NOT NULL,
     client_id VARCHAR(36) NOT NULL,
     account_number VARCHAR(20) NOT NULL,
@@ -37,7 +44,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 );
 
 -- Create Movements Table
-CREATE TABLE IF NOT EXISTS movements (
+CREATE TABLE movements (
     movement_id VARCHAR(36) NOT NULL,
     account_id VARCHAR(36) NOT NULL,
     movement_date TIMESTAMP NOT NULL,
@@ -51,7 +58,7 @@ CREATE TABLE IF NOT EXISTS movements (
 );
 
 -- Create System Parameters Table
-CREATE TABLE IF NOT EXISTS system_parameters (
+CREATE TABLE system_parameters (
     id SERIAL PRIMARY KEY,
     code VARCHAR(50) NOT NULL UNIQUE,
     parameter_value VARCHAR(255) NOT NULL,
@@ -60,5 +67,4 @@ CREATE TABLE IF NOT EXISTS system_parameters (
 
 -- Insert Default Daily Debit Limit
 INSERT INTO system_parameters (code, parameter_value, description)
-SELECT 'DAILY_DEBIT_LIMIT', '1000', 'Límite diario de retiro para débitos'
-WHERE NOT EXISTS (SELECT 1 FROM system_parameters WHERE code = 'DAILY_DEBIT_LIMIT');
+VALUES ('DAILY_DEBIT_LIMIT', '1000', 'Límite diario de retiro para débitos');
