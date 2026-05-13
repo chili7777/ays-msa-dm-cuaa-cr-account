@@ -49,3 +49,16 @@ CREATE TABLE IF NOT EXISTS movements (
     PRIMARY KEY (movement_id),
     CONSTRAINT fk_movements_account FOREIGN KEY (account_id) REFERENCES accounts(account_id)
 );
+
+-- Create System Parameters Table
+CREATE TABLE IF NOT EXISTS system_parameters (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    parameter_value VARCHAR(255) NOT NULL,
+    description VARCHAR(255)
+);
+
+-- Insert Default Daily Debit Limit
+INSERT INTO system_parameters (code, parameter_value, description)
+SELECT 'DAILY_DEBIT_LIMIT', '1000', 'Límite diario de retiro para débitos'
+WHERE NOT EXISTS (SELECT 1 FROM system_parameters WHERE code = 'DAILY_DEBIT_LIMIT');

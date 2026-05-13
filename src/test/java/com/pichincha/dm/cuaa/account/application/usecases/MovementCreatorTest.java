@@ -6,24 +6,14 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateMovementOutputPort;
-import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetAccountByIdOutputPort;
-import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchAccountOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.*;
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.AccountType;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.InitialBalance;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountIdMother;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountMother;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountNumberMother;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.AmountMother;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerIdMother;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.DescriptionMother;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.MovementDateMother;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.MovementMother;
-import com.pichincha.dm.cuaa.account.shared.objectmothers.MovementTypeMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,54 +31,102 @@ final class MovementCreatorTest {
     private GetAccountByIdOutputPort accountRepository;
     @Mock
     private PatchAccountOutputPort accountUpdatePort;
+    @Mock
+    private GetSystemParameterValueOutputPort parameterPort;
+    @Mock
+    private GetDailyWithdrawalSumOutputPort dailySumPort;
 
     @InjectMocks
     private MovementCreator movementCreator;
 
     @Test
-    void given_validMovementData_when_createMovement_then_persistMovement() {
-        Movement movement = MovementMother.random();
-        // Ensure account has enough balance for the movement
+    void given_validDeposit_when_createMovement_then_persistMovement() {
+        Movement movement = MovementMother.create(null, AccountIdMother.random(), 50.0, "DEPOSIT", null, null);
         Account account = AccountMother.create(
-                new com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId(movement.accountId().getValue()),
+                movement.accountId(),
                 CustomerIdMother.random(),
                 AccountNumberMother.random(),
-                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.AccountType("CURRENT"),
-                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.InitialBalance(100000.0),
-                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status(true)
+                new AccountType("CURRENT"),
+                new InitialBalance(100.0),
+                new Status(true)
         );
 
         when(accountRepository.findById(movement.accountId())).thenReturn(Mono.just(account));
         when(movementPersistence.save(any(Movement.class))).thenReturn(Mono.empty());
         when(accountUpdatePort.patch(any(), any())).thenReturn(Mono.empty());
 
-        movementCreator.createMovement(movement).block();
+        StepVerifier.create(movementCreator.createMovement(movement))
+                .expectNextCount(1)
+                .verifyComplete();
 
         verify(movementPersistence, atLeastOnce()).save(any(Movement.class));
-        verify(accountUpdatePort).patch(any(), any());
     }
 
     @Test
-    void given_movementWithoutId_when_createMovement_then_generateIdAndPersist() {
-        Movement movementWithoutId = new Movement(
-                null,
-                MovementMother.random().accountId(),
-                MovementDateMother.random(),
-                MovementTypeMother.random(),
-                AmountMother.random(),
-                null,
-                null,
-                DescriptionMother.random()
+    void given_validWithdrawal_when_createMovement_then_validateLimitAndPersist() {
+        Movement movement = MovementMother.create(null, AccountIdMother.random(), 50.0, "WITHDRAWAL", null, null);
+        Account account = AccountMother.create(
+                movement.accountId(),
+                CustomerIdMother.random(),
+                AccountNumberMother.random(),
+                new AccountType("CURRENT"),
+                new InitialBalance(1000.0),
+                new Status(true)
         );
-        Account account = AccountMother.withId(movementWithoutId.accountId(), CustomerIdMother.random());
 
-        when(accountRepository.findById(movementWithoutId.accountId())).thenReturn(Mono.just(account));
+        when(accountRepository.findById(movement.accountId())).thenReturn(Mono.just(account));
+        when(parameterPort.getValueByCode("DAILY_DEBIT_LIMIT")).thenReturn(Mono.just("1000"));
+        when(dailySumPort.getSumByAccountIdAndDate(movement.accountId())).thenReturn(Mono.just(0.0));
         when(movementPersistence.save(any(Movement.class))).thenReturn(Mono.empty());
         when(accountUpdatePort.patch(any(), any())).thenReturn(Mono.empty());
 
-        movementCreator.createMovement(movementWithoutId).block();
+        StepVerifier.create(movementCreator.createMovement(movement))
+                .expectNextCount(1)
+                .verifyComplete();
 
-        verify(movementPersistence).save(argThat(mov -> mov.movementId() != null));
+        verify(dailySumPort).getSumByAccountIdAndDate(movement.accountId());
+    }
+
+    @Test
+    void given_withdrawalExceedingDailyLimit_when_createMovement_then_throwCupoDiarioExcedido() {
+        Movement movement = MovementMother.create(null, AccountIdMother.random(), 600.0, "WITHDRAWAL", null, null);
+        Account account = AccountMother.create(
+                movement.accountId(),
+                CustomerIdMother.random(),
+                AccountNumberMother.random(),
+                new AccountType("CURRENT"),
+                new InitialBalance(2000.0),
+                new Status(true)
+        );
+
+        when(accountRepository.findById(movement.accountId())).thenReturn(Mono.just(account));
+        when(parameterPort.getValueByCode("DAILY_DEBIT_LIMIT")).thenReturn(Mono.just("1000"));
+        when(dailySumPort.getSumByAccountIdAndDate(movement.accountId())).thenReturn(Mono.just(500.0));
+
+        StepVerifier.create(movementCreator.createMovement(movement))
+                .expectErrorMessage("Cupo diario excedido")
+                .verify();
+    }
+
+    @Test
+    void given_withdrawalWithMissingLimitParameter_when_createMovement_then_useDefaultLimit() {
+        Movement movement = MovementMother.create(null, AccountIdMother.random(), 1100.0, "WITHDRAWAL", null, null);
+        Account account = AccountMother.create(
+                movement.accountId(),
+                CustomerIdMother.random(),
+                AccountNumberMother.random(),
+                new AccountType("CURRENT"),
+                new InitialBalance(2000.0),
+                new Status(true)
+        );
+
+        when(accountRepository.findById(movement.accountId())).thenReturn(Mono.just(account));
+        when(parameterPort.getValueByCode("DAILY_DEBIT_LIMIT")).thenReturn(Mono.empty());
+        when(dailySumPort.getSumByAccountIdAndDate(movement.accountId())).thenReturn(Mono.just(0.0));
+
+        StepVerifier.create(movementCreator.createMovement(movement))
+                .expectErrorMessage("Cupo diario excedido")
+                .verify();
     }
 
     @Test

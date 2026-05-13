@@ -10,8 +10,10 @@ import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.enti
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.jpa.AccountJpaRepository;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.jpa.MovementJpaRepository;
 import com.pichincha.dm.cuaa.account.infrastructure.dataprovider.repository.mapper.MovementRepositoryMapper;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -22,7 +24,7 @@ import reactor.core.scheduler.Schedulers;
 @RequiredArgsConstructor
 @Transactional
 public class JpaMovementRepository implements
-        CreateMovementOutputPort, ListMovementsOutputPort, GetMovementByIdOutputPort, ReplaceMovementOutputPort, PatchMovementOutputPort, DeleteMovementOutputPort {
+        CreateMovementOutputPort, ListMovementsOutputPort, GetMovementByIdOutputPort, ReplaceMovementOutputPort, PatchMovementOutputPort, DeleteMovementOutputPort, GetDailyWithdrawalSumOutputPort {
 
     private final MovementJpaRepository movementJpaRepository;
     private final AccountJpaRepository accountJpaRepository;
@@ -114,5 +116,16 @@ public class JpaMovementRepository implements
                 throw new ResourceNotFoundException("Movement not found: " + movementId.getValue());
             }
         }).subscribeOn(Schedulers.boundedElastic()).then();
+    }
+
+    @Override
+    public Mono<Double> getSumByAccountIdAndDate(AccountId accountId) {
+        return Mono.fromCallable(() -> {
+            LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+            LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+            Double sum = movementJpaRepository.sumAmountByAccountIdAndTypeAndDateBetween(
+                    accountId.getValue(), "WITHDRAWAL", startOfDay, endOfDay);
+            return sum != null ? sum : 0.0;
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 }
