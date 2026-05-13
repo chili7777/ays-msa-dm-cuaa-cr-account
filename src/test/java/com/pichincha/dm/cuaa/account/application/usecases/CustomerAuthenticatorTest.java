@@ -1,6 +1,7 @@
 package com.pichincha.dm.cuaa.account.application.usecases;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetCustomerByIdentificationOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PasswordHasher;
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
 import com.pichincha.dm.cuaa.account.domain.entities.UnauthorizedException;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Identification;
@@ -23,6 +24,9 @@ class CustomerAuthenticatorTest {
     @Mock
     private GetCustomerByIdentificationOutputPort customerPersistence;
 
+    @Mock
+    private PasswordHasher passwordHasher;
+
     @InjectMocks
     private CustomerAuthenticator authenticator;
 
@@ -39,8 +43,9 @@ class CustomerAuthenticatorTest {
 
     @Test
     void shouldLoginSuccessfully() {
-        when(customer.password()).thenReturn(password);
+        when(customer.password()).thenReturn(new Password("hashedPassword"));
         when(customerPersistence.getByIdentification(identification)).thenReturn(Mono.just(customer));
+        when(passwordHasher.matches(password.getValue(), "hashedPassword")).thenReturn(true);
 
         StepVerifier.create(authenticator.login(identification, password))
                 .expectNext(customer)
@@ -58,9 +63,10 @@ class CustomerAuthenticatorTest {
 
     @Test
     void shouldFailWhenPasswordInvalid() {
-        when(customer.password()).thenReturn(password);
+        when(customer.password()).thenReturn(new Password("hashedPassword"));
         when(customerPersistence.getByIdentification(identification)).thenReturn(Mono.just(customer));
         Password wrongPassword = new Password("wrong");
+        when(passwordHasher.matches("wrong", "hashedPassword")).thenReturn(false);
 
         StepVerifier.create(authenticator.login(identification, wrongPassword))
                 .expectError(UnauthorizedException.class)

@@ -77,7 +77,7 @@ public interface CustomerHttpRequestMapper {
     @Mapping(target = "address", source = "address", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "phone", source = "phone", qualifiedByName = "fromValueObjectToString")
     @Mapping(target = "email", source = "email", qualifiedByName = "fromValueObjectToString")
-    @Mapping(target = "password", source = "password", qualifiedByName = "fromValueObjectToString")
+    @Mapping(target = "password", ignore = true)
     @Mapping(target = "status", source = "status", qualifiedByName = "fromValueObjectToBoolean")
     @Mapping(target = "role", source = "role", qualifiedByName = "fromValueObjectToString")
     CustomerDto toCustomerDto(Customer customer);

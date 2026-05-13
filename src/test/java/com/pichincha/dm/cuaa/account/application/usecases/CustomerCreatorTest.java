@@ -7,7 +7,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.CreateCustomerOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PasswordHasher;
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Password;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerMother;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,18 +24,27 @@ final class CustomerCreatorTest {
     @Mock
     private CreateCustomerOutputPort customerPersistence;
 
+    @Mock
+    private PasswordHasher passwordHasher;
+
     @InjectMocks
     private CustomerCreator customerCreator;
 
     @Test
-    void given_validCustomerData_when_createCustomer_then_persistCustomer() {
+    void given_validCustomerData_when_createCustomer_then_hashPasswordAndPersistCustomer() {
         Customer customer = CustomerMother.random();
+        String rawPassword = customer.password().getValue();
+        String hashed = "hashedPassword";
 
-        when(customerPersistence.save(customer)).thenReturn(Mono.empty());
+        when(passwordHasher.hash(rawPassword)).thenReturn(hashed);
+        when(customerPersistence.save(any(Customer.class))).thenReturn(Mono.empty());
 
         customerCreator.createCustomer(customer).block();
 
-        verify(customerPersistence, atLeastOnce()).save(customer);
+        verify(passwordHasher).hash(rawPassword);
+        verify(customerPersistence).save(argThat(cust ->
+            cust.password().getValue().equals(hashed)
+        ));
     }
 
     @Test
@@ -47,11 +58,12 @@ final class CustomerCreatorTest {
                 CustomerMother.random().email(),
                 CustomerMother.random().phone(),
                 CustomerMother.random().address(),
-                CustomerMother.random().password(),
+                new Password("plainPassword"),
                 CustomerMother.random().status(),
                 CustomerMother.random().role()
         );
 
+        when(passwordHasher.hash(any())).thenReturn("hashed");
         when(customerPersistence.save(any(Customer.class))).thenReturn(Mono.empty());
 
         customerCreator.createCustomer(customerWithoutId).block();

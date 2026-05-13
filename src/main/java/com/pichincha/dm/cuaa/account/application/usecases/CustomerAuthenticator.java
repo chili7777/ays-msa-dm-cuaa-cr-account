@@ -2,6 +2,7 @@ package com.pichincha.dm.cuaa.account.application.usecases;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.input.LoginInputPort;
 import com.pichincha.dm.cuaa.account.application.usecases.ports.output.GetCustomerByIdentificationOutputPort;
+import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PasswordHasher;
 import com.pichincha.dm.cuaa.account.domain.annotations.UseCaseService;
 import com.pichincha.dm.cuaa.account.domain.entities.Customer;
 import com.pichincha.dm.cuaa.account.domain.entities.UnauthorizedException;
@@ -14,11 +15,12 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class CustomerAuthenticator implements LoginInputPort {
     private final GetCustomerByIdentificationOutputPort customerPersistence;
+    private final PasswordHasher passwordHasher;
 
     @Override
     public Mono<Customer> login(Identification identification, Password password) {
         return customerPersistence.getByIdentification(identification)
-                .filter(customer -> customer.password().equals(password))
+                .filter(customer -> passwordHasher.matches(password.getValue(), customer.password().getValue()))
                 .switchIfEmpty(Mono.error(new UnauthorizedException("Credenciales inválidas")));
     }
 }

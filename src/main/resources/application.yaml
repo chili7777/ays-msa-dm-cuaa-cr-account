@@ -8,9 +8,13 @@ spring:
     username: ${DB_USER:sa}
     password: ${DB_PASSWORD:}
     driver-class-name: ${DB_DRIVER:org.h2.Driver}
+  sql:
+    init:
+      mode: ${SQL_INIT_MODE:always}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${DB_DDL_AUTO:update}
+    defer-datasource-initialization: true
     show-sql: true
     properties:
       hibernate:
