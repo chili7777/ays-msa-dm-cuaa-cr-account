@@ -18,9 +18,9 @@ public interface MovementJpaRepository extends JpaRepository<MovementEntity, Str
     List<MovementEntity> findByAccountIdAndMovementDateBetween(String accountId, LocalDateTime start, LocalDateTime end);
 
     @Query("SELECT m FROM MovementEntity m WHERE " +
-           "(:accountId IS NULL OR m.accountId = :accountId) AND " +
-           "(:start IS NULL OR m.movementDate >= :start) AND " +
-           "(:end IS NULL OR m.movementDate <= :end) AND " +
-           "(:type IS NULL OR m.movementType = :type)")
+           "(cast(:accountId as string) IS NULL OR m.accountId = :accountId) AND " +
+           "(cast(:start as timestamp) IS NULL OR m.movementDate >= :start) AND " +
+           "(cast(:end as timestamp) IS NULL OR m.movementDate <= :end) AND " +
+           "(cast(:type as string) IS NULL OR m.movementType = :type)")
     List<MovementEntity> findByFilters(@Param("accountId") String accountId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("type") String type);
 }
