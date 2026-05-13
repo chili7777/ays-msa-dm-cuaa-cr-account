@@ -27,6 +27,9 @@ public class MovementCreator implements CreateMovementInputPort {
 
     @Override
     public Mono<Movement> createMovement(Movement movement) {
+        if (movement.amount().getValue() < 0) {
+            return Mono.error(new IllegalArgumentException("El monto debe ser mayor a cero en la solicitud"));
+        }
         return accountRepository.findById(movement.accountId())
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Account not found: " + movement.accountId().getValue())))
                 .flatMap(account -> {

@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS movements (
     account_id VARCHAR(36) NOT NULL,
     movement_date TIMESTAMP NOT NULL,
     movement_type VARCHAR(20) NOT NULL,
-    amount DOUBLE PRECISION NOT NULL CHECK (amount > 0),
+    amount DOUBLE PRECISION NOT NULL,
     balance DOUBLE PRECISION NOT NULL,
     status BOOLEAN NOT NULL,
     description VARCHAR(255),

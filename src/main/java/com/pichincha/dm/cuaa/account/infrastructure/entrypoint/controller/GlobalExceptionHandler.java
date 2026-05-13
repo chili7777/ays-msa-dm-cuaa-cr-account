@@ -6,6 +6,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.UnauthorizedException;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.ErrorListDto;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.ErrorModelDto;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -103,6 +104,20 @@ public class GlobalExceptionHandler {
         ErrorModelDto error = new ErrorModelDto("Not Found", "The requested resource was not found", "N/A", "/api/v1");
         error.setComponent("TX-ACC-001");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorModelDto> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        log.error("Data integrity violation", ex);
+        String message = "Error de integridad de datos. Posible duplicado o valor inválido.";
+        if (ex.getMessage() != null && ex.getMessage().contains("uk_clients_identification")) {
+            message = "La identificación ya existe";
+        } else if (ex.getMessage() != null && ex.getMessage().contains("uk_accounts_number")) {
+            message = "El número de cuenta ya existe";
+        }
+        ErrorModelDto error = new ErrorModelDto("Bad Request", message, "N/A", "/api/v1");
+        error.setComponent("TX-ACC-001");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(Exception.class)
