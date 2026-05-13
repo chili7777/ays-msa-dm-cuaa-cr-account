@@ -62,10 +62,10 @@ public class MovementsController implements MovementsApi {
     public Mono<ResponseEntity<Flux<MovementDto>>> listMovements(UUID xGuid, String xApp, UUID accountId, java.time.LocalDate fromDate, java.time.LocalDate toDate, String movementType, ServerWebExchange exchange) {
         Flux<MovementDto> movementsFlux;
         if (accountId != null) {
-            movementsFlux = listMovementsByAccountUseCase.listMovementsByAccount(new AccountId(accountId.toString()))
+            movementsFlux = listMovementsByAccountUseCase.listMovementsByAccount(new AccountId(accountId.toString()), fromDate, toDate, movementType)
                     .map(movementMapper::toMovementDto);
         } else {
-            movementsFlux = listMovementsUseCase.listMovements()
+            movementsFlux = listMovementsUseCase.listMovements(fromDate, toDate, movementType)
                     .map(movementMapper::toMovementDto);
         }
         return Mono.just(ResponseEntity.ok(movementsFlux));

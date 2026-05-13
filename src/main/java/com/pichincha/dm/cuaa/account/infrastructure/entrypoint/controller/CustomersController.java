@@ -117,7 +117,8 @@ public class CustomersController implements CustomersApi {
         return Mono.just(ResponseEntity.ok(
                 listMovementsByCustomerAndAccountUseCase.listMovementsByCustomerAndAccount(
                                 new CustomerId(customerId.toString()),
-                                new AccountId(accountId.toString()))
+                                new AccountId(accountId.toString()),
+                                null, null, null)
                         .map(movementMapper::toMovementDto)));
     }
 

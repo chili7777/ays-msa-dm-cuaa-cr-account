@@ -6,6 +6,7 @@ import com.pichincha.dm.cuaa.account.domain.annotations.UseCaseService;
 import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 
@@ -16,7 +17,7 @@ public class MovementByCustomerAndAccountLister implements ListMovementsByCustom
     private final ListMovementsOutputPort movementPersistence;
 
     @Override
-    public Flux<Movement> listMovementsByCustomerAndAccount(CustomerId customerId, AccountId accountId) {
+    public Flux<Movement> listMovementsByCustomerAndAccount(CustomerId customerId, AccountId accountId, LocalDate fromDate, LocalDate toDate, String movementType) {
         return movementPersistence.findMovementsByCustomerAndAccountId(customerId, accountId);
     }
 }

@@ -37,7 +37,7 @@ final class MovementByCustomerAndAccountListerTest {
                 .thenReturn(Flux.just(movement));
 
         List<Movement> movements = movementByCustomerAndAccountLister
-                .listMovementsByCustomerAndAccount(customerId, accountId)
+                .listMovementsByCustomerAndAccount(customerId, accountId, null, null, null)
                 .collectList()
                 .block();
 

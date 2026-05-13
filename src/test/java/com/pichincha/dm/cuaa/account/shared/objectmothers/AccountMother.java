@@ -70,4 +70,15 @@ public final class AccountMother {
                 status != null ? new Status(status) : null
         );
     }
+
+    public static Account withIdAndCustomerId(AccountId accountId, CustomerId customerId) {
+        return new Account(
+                accountId,
+                customerId,
+                AccountNumberMother.random(),
+                AccountTypeMother.random(),
+                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.InitialBalance(0.0),
+                StatusMother.random()
+        );
+    }
 }

@@ -32,7 +32,7 @@ final class MovementByAccountListerTest {
 
         when(movementPersistence.findMovementsByAccountId(accountId)).thenReturn(Flux.just(movement));
 
-        List<Movement> movements = movementByAccountLister.listMovementsByAccount(accountId).collectList().block();
+        List<Movement> movements = movementByAccountLister.listMovementsByAccount(accountId, null, null, null).collectList().block();
 
         assert movements != null;
         assertEquals(1, movements.size());

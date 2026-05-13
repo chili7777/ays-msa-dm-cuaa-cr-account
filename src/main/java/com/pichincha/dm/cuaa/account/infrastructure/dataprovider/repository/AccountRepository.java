@@ -17,6 +17,8 @@ import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.CustomerId;
 import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 
+import java.time.LocalDateTime;
+
 @Repository
 @Profile("!test & !local & !default & !development & !staging & !production")
 public class AccountRepository implements CreateAccountOutputPort, ListAccountsOutputPort, GetAccountByIdOutputPort, ReplaceAccountOutputPort, PatchAccountOutputPort, DeleteAccountOutputPort, ListMovementsOutputPort {
@@ -33,6 +35,11 @@ public class AccountRepository implements CreateAccountOutputPort, ListAccountsO
 
     @Override
     public Flux<Movement> findMovementsByCustomerAndAccountId(CustomerId customerId, AccountId accountId) {
+        return Flux.empty();
+    }
+
+    @Override
+    public Flux<Movement> findMovementsByFilters(AccountId accountId, LocalDateTime start, LocalDateTime end, String type) {
         return Flux.empty();
     }
 

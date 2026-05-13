@@ -32,7 +32,7 @@ final class MovementListerTest {
 
         when(movementPersistence.findAllMovements()).thenReturn(Flux.fromIterable(expectedMovements));
 
-        List<Movement> actualMovements = movementLister.listMovements().collectList().block();
+        List<Movement> actualMovements = movementLister.listMovements(null, null, null).collectList().block();
 
         assertEquals(expectedMovements, actualMovements);
         verify(movementPersistence).findAllMovements();

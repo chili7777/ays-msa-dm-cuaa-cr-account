@@ -135,4 +135,14 @@ public class JpaMovementRepository implements
                 .map(movementMapper::toMovement)
                 .subscribeOn(Schedulers.boundedElastic());
     }
+
+    @Override
+    public Flux<Movement> findMovementsByFilters(AccountId accountId, LocalDateTime start, LocalDateTime end, String type) {
+        return Flux.defer(() -> {
+            String accId = accountId != null ? accountId.getValue() : null;
+            return Flux.fromIterable(movementJpaRepository.findByFilters(accId, start, end, type));
+        })
+        .map(movementMapper::toMovement)
+        .subscribeOn(Schedulers.boundedElastic());
+    }
 }

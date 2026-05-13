@@ -94,7 +94,7 @@ public class AccountsController implements AccountsApi {
 																		  UUID accountId,
 																		  ServerWebExchange exchange) {
 		return Mono.just(ResponseEntity.ok(
-				listMovementsByAccountUseCase.listMovementsByAccount(new AccountId(accountId.toString()))
+				listMovementsByAccountUseCase.listMovementsByAccount(new AccountId(accountId.toString()), null, null, null)
 						.map(movementHttpRequestMapper::toMovementDto)));
 	}
 

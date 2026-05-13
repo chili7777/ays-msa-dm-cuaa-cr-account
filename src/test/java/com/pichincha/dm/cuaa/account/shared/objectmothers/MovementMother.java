@@ -77,4 +77,17 @@ public final class MovementMother {
                 DescriptionMother.random()
         );
     }
+
+    public static Movement withAccountIdAndDate(AccountId accountId, java.time.LocalDateTime date) {
+        return new Movement(
+                MovementIdMother.random(),
+                accountId,
+                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementDate(date),
+                MovementTypeMother.random(),
+                AmountMother.random(),
+                BalanceMother.random(),
+                StatusMother.random(),
+                DescriptionMother.random()
+        );
+    }
 }
