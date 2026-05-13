@@ -7,6 +7,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import com.pichincha.dm.cuaa.account.domain.entities.ResourceNotFoundException;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Amount;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Balance;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.InitialBalance;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
@@ -53,23 +54,23 @@ public class MovementCreator implements CreateMovementInputPort {
                 .flatMap(limit -> dailySumPort.getSumByAccountIdAndDate(movement.accountId())
                         .flatMap(currentDailySum -> {
                             if (currentDailySum + movement.amount().getValue() > limit) {
-                                return Mono.error(new IllegalArgumentException("Cupo diario excedido"));
+                                return Mono.error(new IllegalArgumentException("Cupo diario Excedido"));
                             }
                             return Mono.empty();
                         }));
     }
 
     private Mono<Movement> processMovement(Account account, Movement movement, double currentBalance, double amount) {
-        double newBalanceValue = movement.movementType().getValue().equalsIgnoreCase("WITHDRAWAL")
-                ? currentBalance - amount
-                : currentBalance + amount;
+        boolean isWithdrawal = movement.movementType().getValue().equalsIgnoreCase("WITHDRAWAL");
+        double newBalanceValue = isWithdrawal ? currentBalance - amount : currentBalance + amount;
+        double savedAmount = isWithdrawal ? -amount : amount;
 
         Movement movementToSave = new Movement(
                 movement.movementId() != null ? movement.movementId() : new MovementId(UUID.randomUUID().toString()),
                 movement.accountId(),
                 movement.movementDate(),
                 movement.movementType(),
-                movement.amount(),
+                new Amount(savedAmount),
                 new Balance(newBalanceValue),
                 new Status(true),
                 movement.description()

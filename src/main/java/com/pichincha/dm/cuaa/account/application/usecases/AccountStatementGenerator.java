@@ -42,13 +42,13 @@ public class AccountStatementGenerator implements GetAccountStatementInputPort {
                             double totalDebits = items.stream()
                                     .flatMap(item -> item.getMovements().stream())
                                     .filter(m -> m.movementType().getValue().equalsIgnoreCase("WITHDRAWAL"))
-                                    .mapToDouble(m -> m.amount().getValue())
+                                    .mapToDouble(m -> Math.abs(m.amount().getValue()))
                                     .sum();
 
                             double totalCredits = items.stream()
                                     .flatMap(item -> item.getMovements().stream())
                                     .filter(m -> m.movementType().getValue().equalsIgnoreCase("DEPOSIT"))
-                                    .mapToDouble(m -> m.amount().getValue())
+                                    .mapToDouble(m -> Math.abs(m.amount().getValue()))
                                     .sum();
 
                             return AccountStatementReport.builder()

@@ -51,7 +51,7 @@ class AccountStatementGeneratorTest {
                 null, null, null
         );
         
-        Movement debit = MovementMother.create(null, account.accountId(), 100.0, "WITHDRAWAL", 900.0, true);
+        Movement debit = MovementMother.create(null, account.accountId(), -100.0, "WITHDRAWAL", 900.0, true);
         Movement credit = MovementMother.create(null, account.accountId(), 200.0, "DEPOSIT", 1100.0, true);
 
         when(customerPort.findById(cid)).thenReturn(Mono.just(customer));

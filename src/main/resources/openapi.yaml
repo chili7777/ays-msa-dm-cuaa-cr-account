@@ -519,21 +519,79 @@ paths:
             format: uuid
         - name: startDate
           in: query
-          required: true
+          required: false
           schema:
             type: string
             format: date
         - name: endDate
           in: query
-          required: true
+          required: false
           schema:
             type: string
             format: date
+        - name: fecha
+          in: query
+          description: Range of dates in format "YYYY-MM-DD,YYYY-MM-DD"
+          schema:
+            type: string
         - name: format
           in: query
           schema:
             type: string
-            enum: [json, pdf]
+            enum: [json, pdf, base64]
+            default: json
+      responses:
+        '200':
+          description: Report data or file
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AccountStatementReportDto'
+                  - $ref: '#/components/schemas/ReportBase64Dto'
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /reportes:
+    get:
+      operationId: getAccountStatementReportAlias
+      tags: [Reports]
+      summary: Alias for account statement report
+      parameters:
+        - $ref: '#/components/parameters/XGuid'
+        - $ref: '#/components/parameters/XApp'
+        - name: customerId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: fecha
+          in: query
+          schema:
+            type: string
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, pdf, base64]
             default: json
       responses:
         '200':

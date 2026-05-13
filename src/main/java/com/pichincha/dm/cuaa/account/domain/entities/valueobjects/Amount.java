@@ -17,8 +17,8 @@ public class Amount implements ValueObject<Double> {
         if (value == null) {
             throw new IllegalArgumentException("Amount cannot be null");
         }
-        if (value <= 0) {
-            throw new IllegalArgumentException("Amount must be greater than zero");
+        if (value == 0) {
+            throw new IllegalArgumentException("Amount cannot be zero");
         }
     }
 

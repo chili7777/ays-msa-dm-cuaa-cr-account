@@ -125,7 +125,7 @@ public class JpaMovementRepository implements
             LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
             Double sum = movementJpaRepository.sumAmountByAccountIdAndTypeAndDateBetween(
                     accountId.getValue(), "WITHDRAWAL", startOfDay, endOfDay);
-            return sum != null ? sum : 0.0;
+            return sum != null ? Math.abs(sum) : 0.0;
         }).subscribeOn(Schedulers.boundedElastic());
     }
 

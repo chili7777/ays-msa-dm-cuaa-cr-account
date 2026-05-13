@@ -85,6 +85,7 @@ final class MovementCreatorTest {
                 .verifyComplete();
 
         verify(dailySumPort).getSumByAccountIdAndDate(movement.accountId());
+        verify(movementPersistence).save(argThat(m -> m.amount().getValue() == -50.0));
     }
 
     @Test
@@ -104,7 +105,7 @@ final class MovementCreatorTest {
         when(dailySumPort.getSumByAccountIdAndDate(movement.accountId())).thenReturn(Mono.just(500.0));
 
         StepVerifier.create(movementCreator.createMovement(movement))
-                .expectErrorMessage("Cupo diario excedido")
+                .expectErrorMessage("Cupo diario Excedido")
                 .verify();
     }
 
@@ -125,7 +126,7 @@ final class MovementCreatorTest {
         when(dailySumPort.getSumByAccountIdAndDate(movement.accountId())).thenReturn(Mono.just(0.0));
 
         StepVerifier.create(movementCreator.createMovement(movement))
-                .expectErrorMessage("Cupo diario excedido")
+                .expectErrorMessage("Cupo diario Excedido")
                 .verify();
     }
 
