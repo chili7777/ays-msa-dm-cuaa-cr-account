@@ -31,13 +31,16 @@ public class MovementCreator implements CreateMovementInputPort {
                 .flatMap(account -> {
                     double currentBalance = account.initialBalance().getValue();
                     double amount = movement.amount().getValue();
+
+                    if (movement.movementType().getValue().equalsIgnoreCase("WITHDRAWAL")) {
+                        if (currentBalance == 0 || amount > currentBalance) {
+                            return Mono.error(new IllegalArgumentException("Saldo no disponible"));
+                        }
+                    }
+
                     double newBalanceValue = movement.movementType().getValue().equalsIgnoreCase("WITHDRAWAL")
                             ? currentBalance - amount
                             : currentBalance + amount;
-
-                    if (newBalanceValue < 0 && account.accountType().getValue().equalsIgnoreCase("SAVINGS")) {
-                        return Mono.error(new IllegalArgumentException("Insufficient balance for savings account"));
-                    }
 
                     Movement movementToSave = new Movement(
                             movement.movementId() != null ? movement.movementId() : new MovementId(UUID.randomUUID().toString()),
