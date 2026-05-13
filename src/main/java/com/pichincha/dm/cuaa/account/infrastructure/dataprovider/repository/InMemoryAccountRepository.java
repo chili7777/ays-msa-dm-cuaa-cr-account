@@ -282,7 +282,8 @@ public final class InMemoryAccountRepository implements
                         movement.movementType() != null ? movement.movementType().getValue() : existing.movementType(),
                         movement.amount() != null ? movement.amount().getValue() : existing.amount(),
                         movement.balance() != null ? movement.balance().getValue() : existing.balance(),
-                        movement.status() != null ? movement.status().getValue() : existing.status()
+                        movement.status() != null ? movement.status().getValue() : existing.status(),
+                        movement.description() != null ? movement.description().getValue() : existing.description()
                 );
                 movements.put(movementId.getValue(), updated);
                 return Mono.empty();
@@ -303,7 +304,8 @@ public final class InMemoryAccountRepository implements
                         movement.movementType() != null ? movement.movementType().getValue() : existing.movementType(),
                         movement.amount() != null ? movement.amount().getValue() : existing.amount(),
                         movement.balance() != null ? movement.balance().getValue() : existing.balance(),
-                        movement.status() != null ? movement.status().getValue() : existing.status()
+                        movement.status() != null ? movement.status().getValue() : existing.status(),
+                        movement.description() != null ? movement.description().getValue() : existing.description()
                 );
                 movements.put(movementId.getValue(), updated);
                 return Mono.empty();

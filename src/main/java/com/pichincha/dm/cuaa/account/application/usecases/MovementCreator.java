@@ -46,7 +46,8 @@ public class MovementCreator implements CreateMovementInputPort {
                             movement.movementType(),
                             movement.amount(),
                             new Balance(newBalanceValue),
-                            new Status(true)
+                            new Status(true),
+                            movement.description()
                     );
 
                     Account accountToPatch = new Account(

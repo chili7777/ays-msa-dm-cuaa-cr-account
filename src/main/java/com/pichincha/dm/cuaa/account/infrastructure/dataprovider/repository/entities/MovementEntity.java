@@ -9,5 +9,6 @@ public record MovementEntity(
     String movementType,
     Double amount,
     Double balance,
-    Boolean status
+    Boolean status,
+    String description
 ) {}

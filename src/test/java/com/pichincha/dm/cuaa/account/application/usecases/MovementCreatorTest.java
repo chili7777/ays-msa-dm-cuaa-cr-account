@@ -12,8 +12,10 @@ import com.pichincha.dm.cuaa.account.application.usecases.ports.output.PatchAcco
 import com.pichincha.dm.cuaa.account.domain.entities.Account;
 import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.AccountNumberMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.AmountMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.CustomerIdMother;
+import com.pichincha.dm.cuaa.account.shared.objectmothers.DescriptionMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.MovementDateMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.MovementMother;
 import com.pichincha.dm.cuaa.account.shared.objectmothers.MovementTypeMother;
@@ -40,7 +42,15 @@ final class MovementCreatorTest {
     @Test
     void given_validMovementData_when_createMovement_then_persistMovement() {
         Movement movement = MovementMother.random();
-        Account account = AccountMother.withId(movement.accountId(), CustomerIdMother.random());
+        // Ensure account has enough balance for the movement
+        Account account = AccountMother.create(
+                new com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId(movement.accountId().getValue()),
+                CustomerIdMother.random(),
+                AccountNumberMother.random(),
+                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.AccountType("CURRENT"),
+                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.InitialBalance(100000.0),
+                new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status(true)
+        );
 
         when(accountRepository.findById(movement.accountId())).thenReturn(Mono.just(account));
         when(movementPersistence.save(any(Movement.class))).thenReturn(Mono.empty());
@@ -61,7 +71,8 @@ final class MovementCreatorTest {
                 MovementTypeMother.random(),
                 AmountMother.random(),
                 null,
-                null
+                null,
+                DescriptionMother.random()
         );
         Account account = AccountMother.withId(movementWithoutId.accountId(), CustomerIdMother.random());
 

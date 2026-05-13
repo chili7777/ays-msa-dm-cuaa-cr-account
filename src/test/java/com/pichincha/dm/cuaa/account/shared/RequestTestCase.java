@@ -110,16 +110,24 @@ public abstract class RequestTestCase {
                 .isEqualTo(expectedStatusCode);
     }
 
-    protected void assertRequest(String method,
+    protected byte[] assertRequest(String method,
                                  String endpoint,
                                  Integer expectedStatusCode,
                                  HttpHeaders headers) throws Exception {
 
-        webTestClient.method(HttpMethod.valueOf(method))
+        WebTestClient.ResponseSpec responseSpec = webTestClient.method(HttpMethod.valueOf(method))
                 .uri(endpoint)
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .exchange()
-                .expectStatus()
-                .isEqualTo(expectedStatusCode);
+                .exchange();
+
+        responseSpec.expectStatus().isEqualTo(expectedStatusCode);
+
+        if (expectedStatusCode == 204) {
+            responseSpec.expectBody().isEmpty();
+            return new byte[0];
+        }
+
+        byte[] response = responseSpec.expectBody().returnResult().getResponseBody();
+        return response != null ? response : new byte[0];
     }
 }

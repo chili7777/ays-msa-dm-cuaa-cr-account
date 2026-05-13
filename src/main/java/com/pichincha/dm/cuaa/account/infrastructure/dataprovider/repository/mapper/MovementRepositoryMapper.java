@@ -5,6 +5,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Amount;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Balance;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Description;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementDate;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementType;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
@@ -29,6 +30,7 @@ public interface MovementRepositoryMapper {
     @Mapping(target = "amount", source = "amount", qualifiedByName = "fromValueObjectToDouble")
     @Mapping(target = "balance", source = "balance", qualifiedByName = "fromValueObjectToDouble")
     @Mapping(target = "status", source = "status", qualifiedByName = "fromValueObjectToBoolean")
+    @Mapping(target = "description", source = "description", qualifiedByName = "fromValueObjectToString")
     MovementEntity toMovementEntity(Movement movement);
 
     @Mapping(target = "movementId", source = "movementId", qualifiedByName = "toMovementId")
@@ -38,6 +40,7 @@ public interface MovementRepositoryMapper {
     @Mapping(target = "amount", source = "amount", qualifiedByName = "toAmount")
     @Mapping(target = "balance", source = "balance", qualifiedByName = "toBalance")
     @Mapping(target = "status", source = "status", qualifiedByName = "toStatus")
+    @Mapping(target = "description", source = "description", qualifiedByName = "toDescription")
     Movement toMovement(MovementEntity movementEntity);
 
     @Named("fromMovementIdToString")
@@ -103,5 +106,10 @@ public interface MovementRepositoryMapper {
     @Named("toStatus")
     default Status toStatus(Boolean status) {
         return status == null ? null : new Status(status);
+    }
+
+    @Named("toDescription")
+    default Description toDescription(String description) {
+        return new Description(description);
     }
 }

@@ -4,6 +4,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Amount;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Balance;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Description;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementDate;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementType;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
@@ -15,5 +16,6 @@ public record Movement(
     MovementType movementType,
     Amount amount,
     Balance balance,
-    Status status
+    Status status,
+    Description description
 ) {}

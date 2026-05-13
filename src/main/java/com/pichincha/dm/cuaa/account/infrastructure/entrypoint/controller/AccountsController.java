@@ -57,12 +57,34 @@ public class AccountsController implements AccountsApi {
 	@Override
 	public Mono<ResponseEntity<Flux<AccountDto>>> listAccounts(UUID xGuid,
 															   String xApp,
+															   UUID accountId,
 															   UUID clientId,
+															   String accountNumber,
 															   Boolean status,
 															   ServerWebExchange exchange) {
-		return Mono.just(ResponseEntity.ok(
-				listAccountsUseCase.listAccounts()
-						.map(accountHttpRequestMapper::toAccountDto)));
+		Flux<AccountDto> accountsFlux;
+		if (accountId != null) {
+			accountsFlux = getAccountByIdUseCase.getAccountById(new AccountId(accountId.toString()))
+					.map(accountHttpRequestMapper::toAccountDto)
+					.flux();
+		} else {
+			accountsFlux = listAccountsUseCase.listAccounts()
+					.map(accountHttpRequestMapper::toAccountDto);
+		}
+
+		if (clientId != null) {
+			accountsFlux = accountsFlux.filter(account -> account.getClientId().equals(clientId));
+		}
+
+		if (accountNumber != null && !accountNumber.isBlank()) {
+			accountsFlux = accountsFlux.filter(account -> account.getAccountNumber().equals(accountNumber));
+		}
+
+		if (status != null) {
+			accountsFlux = accountsFlux.filter(account -> account.getStatus().equals(status));
+		}
+
+		return Mono.just(ResponseEntity.ok(accountsFlux));
 	}
 
 	@Override

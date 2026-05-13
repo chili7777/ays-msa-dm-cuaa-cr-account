@@ -4,6 +4,7 @@ import com.pichincha.dm.cuaa.account.domain.entities.Movement;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Balance;
+import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Description;
 import com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Status;
 
 public final class MovementMother {
@@ -15,7 +16,8 @@ public final class MovementMother {
                 MovementTypeMother.random(),
                 AmountMother.random(),
                 BalanceMother.random(),
-                StatusMother.random()
+                StatusMother.random(),
+                DescriptionMother.random()
         );
     }
 
@@ -27,7 +29,8 @@ public final class MovementMother {
                 MovementTypeMother.random(),
                 AmountMother.random(),
                 BalanceMother.random(),
-                StatusMother.random()
+                StatusMother.random(),
+                DescriptionMother.random()
         );
     }
 
@@ -39,7 +42,8 @@ public final class MovementMother {
                 MovementTypeMother.random(),
                 AmountMother.random(),
                 BalanceMother.random(),
-                StatusMother.random()
+                StatusMother.random(),
+                DescriptionMother.random()
         );
     }
 
@@ -51,7 +55,8 @@ public final class MovementMother {
                 MovementTypeMother.random(),
                 AmountMother.random(),
                 BalanceMother.random(),
-                StatusMother.random()
+                StatusMother.random(),
+                DescriptionMother.random()
         );
     }
 
@@ -68,7 +73,8 @@ public final class MovementMother {
                 new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.MovementType(movementType),
                 new com.pichincha.dm.cuaa.account.domain.entities.valueobjects.Amount(amount),
                 balance != null ? new Balance(balance) : null,
-                status != null ? new Status(status) : null
+                status != null ? new Status(status) : null,
+                DescriptionMother.random()
         );
     }
 }

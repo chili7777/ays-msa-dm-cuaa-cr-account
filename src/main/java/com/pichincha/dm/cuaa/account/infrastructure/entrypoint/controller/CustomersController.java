@@ -66,10 +66,26 @@ public class CustomersController implements CustomersApi {
     }
 
     @Override
-    public Mono<ResponseEntity<Flux<CustomerDto>>> listCustomers(UUID xGuid, String xApp, String identification, Boolean status, ServerWebExchange exchange) {
-        return Mono.just(ResponseEntity.ok(
-                listCustomersUseCase.listCustomers()
-                        .map(customerMapper::toCustomerDto)));
+    public Mono<ResponseEntity<Flux<CustomerDto>>> listCustomers(UUID xGuid, String xApp, UUID customerId, String identification, Boolean status, ServerWebExchange exchange) {
+        Flux<CustomerDto> customersFlux;
+        if (customerId != null) {
+            customersFlux = getCustomerByIdUseCase.getCustomerById(new CustomerId(customerId.toString()))
+                    .map(customerMapper::toCustomerDto)
+                    .flux();
+        } else {
+            customersFlux = listCustomersUseCase.listCustomers()
+                    .map(customerMapper::toCustomerDto);
+        }
+
+        if (identification != null && !identification.isBlank()) {
+            customersFlux = customersFlux.filter(c -> c.getIdentification().equals(identification));
+        }
+
+        if (status != null) {
+            customersFlux = customersFlux.filter(c -> c.getStatus().equals(status));
+        }
+
+        return Mono.just(ResponseEntity.ok(customersFlux));
     }
 
     @Override

@@ -49,6 +49,11 @@ paths:
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
+        - name: customerId
+          in: query
+          schema:
+            type: string
+            format: uuid
         - name: identification
           in: query
           schema:
@@ -217,11 +222,20 @@ paths:
       parameters:
         - $ref: '#/components/parameters/XGuid'
         - $ref: '#/components/parameters/XApp'
+        - name: accountId
+          in: query
+          schema:
+            type: string
+            format: uuid
         - name: clientId
           in: query
           schema:
             type: string
             format: uuid
+        - name: accountNumber
+          in: query
+          schema:
+            type: string
         - name: status
           in: query
           schema:
@@ -765,6 +779,10 @@ components:
           format: double
         status:
           type: boolean
+        description:
+          type: string
+          maxLength: 100
+          example: Payment for services
     MovementCreateRequestDto:
       type: object
       required: [accountId, movementDate, movementType, amount]
@@ -781,6 +799,10 @@ components:
         amount:
           type: number
           format: double
+        description:
+          type: string
+          maxLength: 100
+          example: Payment for services
     MovementUpdateRequestDto:
       type: object
       required: [movementDate, movementType, amount, status]
@@ -796,6 +818,10 @@ components:
           format: double
         status:
           type: boolean
+        description:
+          type: string
+          maxLength: 100
+          example: Payment for services
     MovementPatchRequestDto:
       type: object
       properties:
@@ -810,6 +836,10 @@ components:
           format: double
         status:
           type: boolean
+        description:
+          type: string
+          maxLength: 100
+          example: Payment for services
     ErrorModelDto:
       type: object
       required: [title, detail, instance, type]
