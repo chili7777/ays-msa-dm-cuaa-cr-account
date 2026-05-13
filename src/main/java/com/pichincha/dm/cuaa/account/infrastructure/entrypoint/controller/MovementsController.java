@@ -1,6 +1,7 @@
 package com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller;
 
 import com.pichincha.dm.cuaa.account.application.usecases.ports.input.*;
+import com.pichincha.dm.cuaa.account.domain.entities.identifiers.AccountId;
 import com.pichincha.dm.cuaa.account.domain.entities.identifiers.MovementId;
 import com.pichincha.dm.cuaa.account.domain.entities.ResourceNotFoundException;
 import com.pichincha.dm.cuaa.account.infrastructure.entrypoint.controller.entities.*;
@@ -27,6 +28,7 @@ public class MovementsController implements MovementsApi {
 
     private final CreateMovementInputPort createMovementUseCase;
     private final ListMovementsInputPort listMovementsUseCase;
+    private final ListMovementsByAccountInputPort listMovementsByAccountUseCase;
     private final GetMovementByIdInputPort getMovementByIdUseCase;
     private final ReplaceMovementInputPort replaceMovementUseCase;
     private final PatchMovementInputPort patchMovementUseCase;
@@ -57,9 +59,15 @@ public class MovementsController implements MovementsApi {
 
     @Override
     public Mono<ResponseEntity<Flux<MovementDto>>> listMovements(UUID xGuid, String xApp, UUID accountId, java.time.LocalDate fromDate, java.time.LocalDate toDate, String movementType, ServerWebExchange exchange) {
-        return Mono.just(ResponseEntity.ok(
-                listMovementsUseCase.listMovements()
-                        .map(movementMapper::toMovementDto)));
+        Flux<MovementDto> movementsFlux;
+        if (accountId != null) {
+            movementsFlux = listMovementsByAccountUseCase.listMovementsByAccount(new AccountId(accountId.toString()))
+                    .map(movementMapper::toMovementDto);
+        } else {
+            movementsFlux = listMovementsUseCase.listMovements()
+                    .map(movementMapper::toMovementDto);
+        }
+        return Mono.just(ResponseEntity.ok(movementsFlux));
     }
 
     @Override
